@@ -45,7 +45,22 @@ const usedObjects = {
             "dimentions":{
                 "type":"info-select",
                 "caption":"Измерения",
-                "list":['Custom1','Custom2','Custom3','Custom4','Custom5','Custom6']
+                "list":['D_BUnit',
+                        'D_Measures',
+                        'D_Period',
+                        'D_Scenario',
+                        'D_Version',
+                        'D_Year',
+                        'UC00 ~ Level',
+                        'UC01 ~ Projects',
+                        'UC02 ~ BudgetForms',
+                        'UC03','UC04',
+                        'UC05 ~ Accounts',
+                        'UC06','UC07',
+                        'UC08 ~ iBUnit',
+                        'UC09','UC10 ~ BUnitDivision',
+                        'UC11 ~ Status',
+                        'UC12 ~ LegalEntity']
             },
             "tasks":{
                 "type":"info",
@@ -95,7 +110,7 @@ function drawInterface (obj){
            case "info":
            $(groupParent).append(`
                 <div name = "${ss}-container">
-                <div name = "${ss}" class = "row-info" type = type = "${gr.data[ss].type}">
+                <div name = "${ss}" class = "row-info" type = "${gr.data[ss].type}">
                 <span class="label">${gr.data[ss].caption}</span>
                 <input class ="data" type = "text" placeholder = "Объект/файл">
                 <textarea class = "info" rows="5" placeholder = "Описание"></textarea>
