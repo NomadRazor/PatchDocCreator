@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder"
+    "build": "electron-builder" 
   },
   "repository": "https://github.com/NomadRazor/PatchDocCreator.git",
   "author": "Peter A. Thunder",
