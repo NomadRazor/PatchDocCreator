@@ -118,7 +118,7 @@ textarea:active,textarea:focus{
 
 ::-webkit-scrollbar{
   width: 5px;
-  background:transparent;
+  background:#202630;
 }
 
 ::-webkit-scrollbar-thumb{
@@ -126,16 +126,16 @@ textarea:active,textarea:focus{
 }
 .center-row{
     display:grid;
-    grid-template-columns: 100%;
+    grid-template-columns: 50% 50%;
     grid-template-rows: 100%;
-    grid-template-areas: "center";
+    grid-template-areas: "cleanup generate";
     margin: 5px 0 10px 0;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
 }
 .generate-btn{
-    grid-area: center;
+    grid-area: generate;
     align-self: center;
     justify-self: center;
     background:#e3ce2a;
@@ -173,6 +173,50 @@ textarea:active,textarea:focus{
     background:#eeeb4d;
 }
 .generate-btn:active:after{
+    animation: none;
+    outline: none;
+}
+
+.cleanup-btn{
+    grid-area: cleanup;
+    align-self: center;
+    justify-self: center;
+    background:#b83232;
+    position: relative;
+    border:none;
+    padding:10px;
+    color:#fff;
+}
+.cleanup-btn:after{
+     content: '';
+     z-index: -1;
+     display:block;
+     position: absolute;
+     left:50%;
+     top:50%;
+     height:100%;
+     width:100%;
+     background: #b83232;
+     transition:all 0.5s ease;
+     transform:translate(-50%,-50%);
+     
+}
+.cleanup-btn:active,:hover{
+    outline: none;
+}
+@keyframes pulse{
+    0% {height:100%;
+        width:100%;opacity: 1;}
+    100% {height:160%;
+        width:120%;opacity: 0;}
+}
+.cleanup-btn:hover:after{
+    animation: pulse 1s linear infinite;   
+}
+.cleanup-btn:active{
+    background:#c02525;
+}
+.cleanup-btn:active:after{
     animation: none;
     outline: none;
 }

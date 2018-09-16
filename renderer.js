@@ -1,87 +1,10 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
+let {usedObjects, descriptionPacket} = require('./interface.js');
 let $ = require('jquery');
-const descriptionPacket = {
-        "parent":"container",
-        "group":{
-            "name":"package-description",
-            "caption":"Описание пакета",
-            "data":{
-                "author":{
-                    "type":"text",
-                    "caption":"Автор"
-                },
-                "patch-number":{
-                    "type":"text",
-                    "caption":"Патч(УРИС)"
-                },
-                "date-create":{
-                    "type":"text",
-                    "caption":"Дата"
-                },
-                "description":{
-                    "type":"textarea",
-                    "caption":"Краткое описание ошибки"
-                },
-                "customer":{
-                    "type":"text",
-                    "caption":"Заказчик разработки"
-                }
-            }
-        }
-        
-}; // interface settings
-const usedObjects = {
-      "parent":"container",
-      "group":{
-        "name":"used-objects",
-        "caption":"Список объектов/файлов в пакете",
-        "data":{
-            "patch-files":{
-                "type":"info",
-                "caption":"Файлы"
-            },
-            "dimentions":{
-                "type":"info-select",
-                "caption":"Измерения",
-                "list":['D_BUnit',
-                        'D_Measures',
-                        'D_Period',
-                        'D_Scenario',
-                        'D_Version',
-                        'D_Year',
-                        'UC00 ~ Level',
-                        'UC01 ~ Projects',
-                        'UC02 ~ BudgetForms',
-                        'UC03','UC04',
-                        'UC05 ~ Accounts',
-                        'UC06','UC07',
-                        'UC08 ~ iBUnit',
-                        'UC09','UC10 ~ BUnitDivision',
-                        'UC11 ~ Status',
-                        'UC12 ~ LegalEntity']
-            },
-            "tasks":{
-                "type":"info",
-                "caption":"Задачи"
-            },
-            "menus":{
-                "type":"info",
-                "caption":"Пункты меню"
-            },
-            "sql-scripts":{
-                "type":"info",
-                "caption":"SQL скрипты"
-                
-            },
-            "bat-scripts":{
-                "type":"info",
-                "caption":"Bat скрипты"
-            }
-        }
-      }
-};
+let {dialog} = require('electron').remote;
+var fs = require('fs');
 
 function drawInterface (obj){
     let gr = obj.group;
@@ -95,7 +18,7 @@ function drawInterface (obj){
            $(groupParent).append(`
                 <div class = "row">
                 <span>${gr.data[ss].caption}</span>
-                <input name = "${ss}" type = "${gr.data[ss].type}" placeholder = "${gr.data[ss].caption}">
+                <input data-rv = "${ss}" name = "${ss}" type = "${gr.data[ss].type}" placeholder = "${gr.data[ss].caption}">
                 </div>
                 `);
                break;
@@ -103,7 +26,7 @@ function drawInterface (obj){
            $(groupParent).append(`
                 <div class = "row">
                 <span>${gr.data[ss].caption}</span>
-                <textarea name = "${ss}" rows = "10" cols = "60" placeholder = "${gr.data[ss].caption}"></textarea>
+                <textarea data-rv = "${ss}" name = "${ss}" rows = "10" cols = "60" placeholder = "${gr.data[ss].caption}"></textarea>
                 </div>
                 `); 
                break;
@@ -112,9 +35,9 @@ function drawInterface (obj){
                 <div name = "${ss}-container">
                 <div name = "${ss}" class = "row-info" type = "${gr.data[ss].type}">
                 <span class="label">${gr.data[ss].caption}</span>
-                <input class ="data" type = "text" placeholder = "Объект/файл">
-                <textarea class = "info" rows="5" placeholder = "Описание"></textarea>
-                <a class="next-row" data-append = "${ss}-container" href="#">+</a>
+                <input data-rv = "${ss}-main" class ="data" type = "text" placeholder = "Объект/файл">
+                <textarea data-rv = "${ss}-info" class = "info" rows="5" placeholder = "Описание"></textarea>
+                <a class="next-row" data-rv = "${ss}"  data-append = "${ss}-container" href="#">+</a>
                 </div>
                 `);  
                break;
@@ -128,14 +51,14 @@ function drawInterface (obj){
                 <div name = "${ss}" class = "row-info" type = "${gr.data[ss].type}">
                 <span class="label">${gr.data[ss].caption}</span>
                 <div class = "select">
-                    <input type="text" placeholder = "Объект/файл">
+                    <input  data-rv = "${ss}-main" type="text" placeholder = "Объект/файл">
                     <a name = "list-show" class = "btn-show"></a>
                     <ul class = "closed">
                     ${ul}
                     </ul>
                 </div>
-                <textarea class = "info" rows="5" placeholder = "Описание"></textarea>
-                <a class="next-row" data-append = "${ss}-container" href="#">+</a>
+                <textarea data-rv = "${ss}-info" class = "info" rows="5" placeholder = "Описание"></textarea>
+                <a class="next-row" data-rv = "${ss}" data-append = "${ss}-container" href="#">+</a>
                 </div>
                 `);  
                 document.querySelector('.select a[name="list-show"]')
@@ -166,10 +89,10 @@ drawInterface(descriptionPacket);
 drawInterface(usedObjects);
 
 $('div.row-info[type = "info"] > .next-row').on('click',(event)=>{
-    $('div[name="'+$(event.target).attr('data-append')+'"]').append(`<div class = "row-info">
+    $('div[name="'+$(event.target).attr('data-append')+'"]').append(`<div name = "${$(event.target).attr('data-rv')}" class = "row-info">
     <span class="label"></span>
-    <input class ="data" type = "text" placeholder = "Объект/файл">
-    <textarea class = "info" rows="5" placeholder = "Описание"></textarea>
+    <input data-rv = "${$(event.target).attr('data-rv')}-main" class ="data" type = "text" placeholder = "Объект/файл">
+    <textarea data-rv = "${$(event.target).attr('data-rv')}-info" class = "info" rows="5" placeholder = "Описание"></textarea>
     <a class="next-row" name = "del" data-append = "${$(event.target).attr('data-append')}" href="#">-</a>
     </div>
     `);
@@ -179,21 +102,20 @@ $('div.row-info[type = "info"] > .next-row').on('click',(event)=>{
      });
 });
 $('div.row-info[type="info-select"] > .next-row').on('click',(event)=>{
-    console.log('return');
     let ul ='';
     for (var i = 0 ; i<usedObjects.group.data[$(event.target).attr('data-append').split('-')[0]].list.length; i++){
       ul +=`<li>${usedObjects.group.data[$(event.target).attr('data-append').split('-')[0]].list[i]}</li>\n`;
     }
-    $('div[name="'+$(event.target).attr('data-append')+'"]').append(`<div class = "row-info">
+    $('div[name="'+$(event.target).attr('data-append')+'"]').append(`<div name = "${$(event.target).attr('data-rv')}" class = "row-info">
     <span class="label"></span>
     <div class = "select">
-                    <input type="text" placeholder = "Объект/файл">
+                    <input data-rv = "${$(event.target).attr('data-rv')}-main" type="text" placeholder = "Объект/файл">
                     <a name = "list-show" class = "btn-show"></a>
                     <ul class = "closed">
                     ${ul}
                     </ul>
                 </div>
-    <textarea class = "info" rows="5" placeholder = "Описание"></textarea>
+    <textarea data-rv = "${$(event.target).attr('data-rv')}-info" class = "info" rows="5" placeholder = "Описание"></textarea>
     <a class="next-row" name = "del" data-append = "${$(event.target).attr('data-append')}" href="#">-</a>
     </div>
     `);
@@ -224,29 +146,293 @@ $('div.row-info[type="info-select"] > .next-row').on('click',(event)=>{
     });
 });
 
-$(`.container`).append('<div class = "center-row"><button class = "generate-btn">Сгенерировать файл</button></div>');
-$('.generate-btn').on('click',()=>{
-   console.log($('.container').html());
+$(`.container`).append(`
+<div class = "center-row">
+        <button class = "cleanup-btn">Очистить ввод</button>
+        <button class = "generate-btn">Сгенерировать файл</button>
+</div> `);
+
+$('.cleanup-btn').on('click',()=>{
+   clearValues(descriptionPacket);
+   clearValues(usedObjects);
 });
 
-/*function asset(){
-    let objectStringify = function (obj){
-        let str = '';
-        for(let ss in obj){
-            
-            if (typeof(obj[ss]) == "object"){
-               str += ss + '<br>' + objectStringify(obj[ss]);
-            } else {
-                str += `${ss} - ${obj[ss]} <br>`;
-            }
+$('.generate-btn').on('click',()=>{
+    getValues(descriptionPacket);
+    getValues(usedObjects);
+   dialog.showSaveDialog((fileName)=>{
+     if (fileName === undefined){
+         return
+     }
+     fs.writeFile(fileName.indexOf('.html') != -1 ? fileName : fileName+'.html' ,prepareContent(),(error)=>{ if (error) {console.log(error)}});
+   });  
+});
+
+function getValues(obj){
+    let gr = obj.group;
+    for (var ss in gr.data){
+        switch (gr.data[ss].type) {
+            case "text":
+            case "date":
+            gr.data[ss].value = $(`input[data-rv="${ss}"][name = "${ss}"]`).val();
+                break;
+            case "textarea":
+            gr.data[ss].value = $(`textarea[data-rv="${ss}"][name = "${ss}"]`).val();
+                break;
+            case "info":
+            let rv;
+            gr.data[ss].values = [];
+            document.querySelectorAll(`[name="${ss}"]`)
+            .forEach((elem)=>{
+                if (elem.querySelector(`[data-rv="${ss}-main"`).value.trim() != "" && elem.querySelector(`[data-rv="${ss}-info"`).value != ""){
+                rv = {"main":elem.querySelector(`[data-rv="${ss}-main"`).value, "info":elem.querySelector(`[data-rv="${ss}-info"`).value};
+                gr.data[ss].values.push(rv);
+               }
+            });
+                break;
+             case "info-select":
+             let rvl;
+            gr.data[ss].values = [];
+            document.querySelectorAll(`[name="${ss}"]`)
+            .forEach((elem)=>{
+                if (elem.querySelector(`[data-rv="${ss}-main"`).value.trim() != "" && elem.querySelector(`[data-rv="${ss}-info"`).value != ""){
+                rvl = {"main":elem.querySelector(`[data-rv="${ss}-main"`).value, "info":elem.querySelector(`[data-rv="${ss}-info"`).value};
+                gr.data[ss].values.push(rvl);
+                }
+            });
+                break;
+            default:
+                break;
         }
-        return str;
-    };
-    let settingsData = objectStringify(IS);
-    console.log('settings',settingsData);
-    $('.container').html(settingsData);
-}
-asset();*/
+    }
+};
 
+function clearValues(obj){
+    let gr = obj.group;
+    for (var ss in gr.data){
+        switch (gr.data[ss].type) {
+            case "text":
+            case "date":
+            $(`input[data-rv="${ss}"][name = "${ss}"]`).val('');
+                break;
+            case "textarea":
+            $(`textarea[data-rv="${ss}"][name = "${ss}"]`).val('');
+                break;
+            case "info":
+            document.querySelectorAll(`[name="${ss}"]`)
+            .forEach((elem)=>{
+                elem.querySelector(`[data-rv="${ss}-main"`).value = "";
+                elem.querySelector(`[data-rv="${ss}-info"`).value = "";
+             
+            });
+                break;
+             case "info-select":
+             let rvl;
+            gr.data[ss].values = [];
+            document.querySelectorAll(`[name="${ss}"]`)
+            .forEach((elem)=>{
+                elem.querySelector(`[data-rv="${ss}-main"`).value = "";
+                elem.querySelector(`[data-rv="${ss}-info"`).value = "";
+            });
+                break;
+            default:
+                break;
+        }
+    }
+};
 
+function drawInterfaceData (obj){
+    let gr = obj.group;
+    let html = ``;
+    html += `<div class="expander" name = "${gr.name}">`;
+    html += `<span class = "group-name">${gr.caption}</span>`;
+   for (var ss in gr.data){
+       switch (gr.data[ss].type) {
+           case "text":
+           case "date":
+           html +=`
+                <div class = "row">
+                <span>${gr.data[ss].caption}</span>
+                <span>${gr.data[ss].value}</span>
+                </div>
+                `;
+               break;
+           case "textarea":
+           html += `
+                <div class = "row">
+                <span>${gr.data[ss].caption}</span>
+                <span>${gr.data[ss].value}</span>
+                </div>
+                `; 
+               break;
+           case "info-select":
+           case "info":
+           if (gr.data[ss].values.length > 0){
+           html += `<div name = "${ss}-container">`;
+           
+           for (var ln = 0; ln<gr.data[ss].values.length;ln++){
+            html +=`
+                    
+                    <div name = "${ss}" class = "row-info" type = "${gr.data[ss].type}">
+                    <span class="label">${ln == 0 ? gr.data[ss].caption : ''}</span>
+                    <span>${gr.data[ss].values[ln].main}</span>
+                    <span>${gr.data[ss].values[ln].info}</span>
+                    <i></i>
+                    </div>
+                    `;  
+                }
+            html += `</div>`;
+            } else {
+                html +='';
+            }
+               break;
+           default:
+               break;
+       }
+   }
+   return html+'</div>';
+};
 
+function prepareContent(){
+
+    let resultContent = `
+    <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+        <style>
+        body{
+            display:grid;
+            grid-template-columns: 25% 50% 25%;
+            grid-template-rows: 100%;
+            grid-template-areas: ". main .";
+            background:#ffffff;
+        }             
+        .container{
+            display:block;
+            grid-area: main;
+            width:100%;
+            box-sizing: border-box;
+            margin-top:10px;
+            color:#000000;
+        }
+        .row{
+            display:grid;
+            grid-template-columns: 40% 60%;
+            grid-template-rows: 100%;
+            grid-template-areas: "label data";
+            margin: 0px 0 0px 0;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .row > span{
+            padding:10px;
+            transition: all 0.4s ease;
+        }
+        .row:hover > span {
+            font-size: 1.3em;
+        }
+        .row > span:nth-child(1){
+            grid-area:label;
+            color:#000000;
+        
+        }
+        .row > span:nth-child(2){
+            grid-area: data;
+            align-self: center;
+           
+        }
+        
+        .row-info{
+            display:grid;
+            grid-template-columns: 14% 40% 1% 40%;
+            grid-template-rows: 100%;
+            grid-template-areas: "label data . info";
+            margin: 5px 0 10px 0;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .row-info > span{
+            padding:10px;
+            transition: all 0.4s ease;
+        }
+        .row-info:hover > span {
+            font-size: 1.3em;
+        }
+
+        .row-info .label{
+            grid-area:label;
+            font-size:1em;
+            color:#000000;
+        
+        }
+        .row-info .data{
+            grid-area: data;
+            margin-right:5px;
+        }
+        .row-info .info{
+            grid-area: info;
+            box-sizing: border-box;
+            margin:2px 0px 2px 0px;
+        }
+        .row-info .next-row{
+            grid-area: next-row;
+            justify-self: center;
+            align-self: center;
+            color:#fff;
+            font-size: 2em;
+            text-decoration: none;
+        }
+        
+        .row-info .next-row:hover{
+            text-decoration: none;
+            grid-area: next-row;
+            color:#1290e3;
+            font-size: 2em;
+        }
+        
+        
+        .group-name{
+            display: block;
+            font-size:1.5em;
+            margin:10px;
+            text-align: center;
+            color: #000;
+            background: #e9d41c;
+        }
+        
+        ::-webkit-scrollbar{
+          width: 5px;
+          background:transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb{
+            background: #1290e3;
+        }
+        .center-row{
+            display:grid;
+            grid-template-columns: 100%;
+            grid-template-rows: 100%;
+            grid-template-areas: "center";
+            margin: 5px 0 10px 0;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        </style>   
+            <title>Patch Document</title>
+        </head>
+        <body>
+            <div class="container">
+            ${drawInterfaceData(descriptionPacket)}
+            ${drawInterfaceData(usedObjects)}
+            </div>
+        </body>
+        </html>
+
+    `;
+    return resultContent;
+};

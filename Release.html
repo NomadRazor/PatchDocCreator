@@ -1,0 +1,180 @@
+
+    <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+        <style>
+        body{
+            display:grid;
+            grid-template-columns: 25% 50% 25%;
+            grid-template-rows: 100%;
+            grid-template-areas: ". main .";
+            background:#ffffff;
+        }             
+        .container{
+            display:block;
+            grid-area: main;
+            width:100%;
+            box-sizing: border-box;
+            margin-top:10px;
+            color:#000000;
+        }
+        .row{
+            display:grid;
+            grid-template-columns: 40% 60%;
+            grid-template-rows: 100%;
+            grid-template-areas: "label data";
+            margin: 0px 0 0px 0;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .row > span{
+            padding:10px;
+            transition: all 0.4s ease;
+        }
+        .row:hover > span {
+            font-size: 1.3em;
+        }
+        .row > span:nth-child(1){
+            grid-area:label;
+            color:#000000;
+        
+        }
+        .row > span:nth-child(2){
+            grid-area: data;
+            align-self: center;
+           
+        }
+        
+        .row-info{
+            display:grid;
+            grid-template-columns: 14% 40% 1% 40%;
+            grid-template-rows: 100%;
+            grid-template-areas: "label data . info";
+            margin: 5px 0 10px 0;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .row-info > span{
+            padding:10px;
+            transition: all 0.4s ease;
+        }
+        .row-info:hover > span {
+            font-size: 1.3em;
+        }
+
+        .row-info .label{
+            grid-area:label;
+            font-size:1em;
+            color:#000000;
+        
+        }
+        .row-info .data{
+            grid-area: data;
+            margin-right:5px;
+        }
+        .row-info .info{
+            grid-area: info;
+            box-sizing: border-box;
+            margin:2px 0px 2px 0px;
+        }
+        .row-info .next-row{
+            grid-area: next-row;
+            justify-self: center;
+            align-self: center;
+            color:#fff;
+            font-size: 2em;
+            text-decoration: none;
+        }
+        
+        .row-info .next-row:hover{
+            text-decoration: none;
+            grid-area: next-row;
+            color:#1290e3;
+            font-size: 2em;
+        }
+        
+        
+        .group-name{
+            display: block;
+            font-size:1.5em;
+            margin:10px;
+            text-align: center;
+            color: #000;
+            background: #e9d41c;
+        }
+        
+        ::-webkit-scrollbar{
+          width: 5px;
+          background:transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb{
+            background: #1290e3;
+        }
+        .center-row{
+            display:grid;
+            grid-template-columns: 100%;
+            grid-template-rows: 100%;
+            grid-template-areas: "center";
+            margin: 5px 0 10px 0;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        </style>   
+            <title>Patch Document</title>
+        </head>
+        <body>
+            <div class="container">
+            <div class="expander" name = "package-description"><span class = "group-name">Описание пакета</span>
+                <div class = "row">
+                <span>Автор</span>
+                <span>efwfwef</span>
+                </div>
+                
+                <div class = "row">
+                <span>Патч(УРИС)</span>
+                <span>ewfw</span>
+                </div>
+                
+                <div class = "row">
+                <span>Дата</span>
+                <span>wefwef</span>
+                </div>
+                
+                <div class = "row">
+                <span>Краткое описание ошибки</span>
+                <span>wefwefw</span>
+                </div>
+                
+                <div class = "row">
+                <span>Заказчик разработки</span>
+                <span></span>
+                </div>
+                </div>
+            <div class="expander" name = "used-objects"><span class = "group-name">Список объектов/файлов в пакете</span><div name = "patch-files-container">
+                    
+                    <div name = "patch-files" class = "row-info" type = "info">
+                    <span class="label">Файлы</span>
+                    <span>wefwefwe</span>
+                    <span>fwefwef</span>
+                    <i></i>
+                    </div>
+                    </div><div name = "tasks-container">
+                    
+                    <div name = "tasks" class = "row-info" type = "info">
+                    <span class="label">Задачи</span>
+                    <span>wefwefwefw</span>
+                    <span>wefwefwef</span>
+                    <i></i>
+                    </div>
+                    </div></div>
+            </div>
+        </body>
+        </html>
+
+    
