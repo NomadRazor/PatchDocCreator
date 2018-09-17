@@ -346,9 +346,9 @@ function prepareContent(){
         
         .row-info{
             display:grid;
-            grid-template-columns: 14% 40% 1% 40%;
+            grid-template-columns: 14% 43% 43%;
             grid-template-rows: 100%;
-            grid-template-areas: "label data . info";
+            grid-template-areas: "label data info";
             margin: 5px 0 10px 0;
             align-items: center;
             justify-content: center;
