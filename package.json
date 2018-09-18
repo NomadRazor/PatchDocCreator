@@ -9,7 +9,8 @@
   "devDependencies": {
     "electron": "^2.0.9",
     "electron-builder": "^20.28.4",
-    "mssql": "^4.2.1"
+    "mssql": "^4.2.1",
+    "mysql": "^2.16.0"
   },
   "scripts": {
     "start": "electron .",

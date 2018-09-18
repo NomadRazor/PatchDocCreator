@@ -3,13 +3,88 @@ const {app, BrowserWindow, Menu} = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let mainWindow,settingWindow;
 
-let template = [];
+function showSettingWindow(){
+  settingWindow = new BrowserWindow({width: 800, height: 600})
+
+  // and load the index.html of the app.
+  settingWindow.loadFile(`./settings.html`)
+
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
+
+  // Emitted when the window is closed.
+  settingWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    settingWindow = null
+  })
+}
+
+let template = [
+    {
+      label:'File',
+      submenu:[{
+        label:'Setting DB',
+        accelerator:'Ctrl+Shift+S',
+        click:()=>{
+          showSettingWindow();
+        }
+      }]
+    },
+    {
+      label: 'View',
+      submenu: [{
+        label: 'Reload',
+        accelerator: 'CmdOrCtrl+R',
+        click: (item, focusedWindow) => {
+          if (focusedWindow) {
+            // on reload, start fresh and close any old
+            // open secondary windows
+            if (focusedWindow.id === 1) {
+              BrowserWindow.getAllWindows().forEach(win => {
+                if (win.id > 1) win.close()
+              })
+            }
+            focusedWindow.reload()
+          }
+        }
+      }, {
+        label: 'Toggle Full Screen',
+        accelerator: (() => {
+          if (process.platform === 'darwin') {
+            return 'Ctrl+Command+F'
+          } else {
+            return 'F11'
+          }
+        })(),
+        click: (item, focusedWindow) => {
+          if (focusedWindow) {
+            focusedWindow.setFullScreen(!focusedWindow.isFullScreen())
+          }
+        }
+      }, {
+        label: 'Toggle Developer Tools',
+        accelerator: (() => {
+          if (process.platform === 'darwin') {
+            return 'Alt+Command+I'
+          } else {
+            return 'Ctrl+Shift+I'
+          }
+        })(),
+        click: (item, focusedWindow) => {
+          if (focusedWindow) {
+            focusedWindow.toggleDevTools()
+          }
+        }
+      }
+      ]}
+];
 
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
-
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1024, height: 768})

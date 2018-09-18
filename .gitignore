@@ -3,3 +3,4 @@ dist
 TestPatch.html
 package-lock.json
 npm-debug.log
+database_settings.json
