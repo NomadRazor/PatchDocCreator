@@ -40,6 +40,7 @@ function testConnection(){
                         }).then(result => {
                             console.dir(result)
                         }).catch(err => {
+                            alert('Connection error!');
                             console.log(err);
                         })
                         
