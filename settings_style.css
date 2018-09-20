@@ -14,7 +14,9 @@ body{
  .lbl{
      color:#fff;
  }
-
+ #hd{
+     margin-bottom:10px;
+ }
  input{
     padding:5px;
     color:#fff;
@@ -77,11 +79,13 @@ input:active,input:focus{
     grid-area: generate;
     align-self: center;
     justify-self: center;
-    background:#ffffff;
+    background: #0b367c;
+     color:#fff;
     position: relative;
     border:none;
     padding:5px;
     margin:2px;
+
 }
 .btn:after{
      content: '';
@@ -94,8 +98,7 @@ input:active,input:focus{
      width:100%;
      background: inherit;
      transition:all 0.5s ease;
-     transform:translate(-50%,-50%);
-     
+     transform:translate(-50%,-50%);     
 }
 .btn:active,.btn:hover,.btn:focus{
     outline: none;
@@ -119,4 +122,15 @@ input:active,input:focus{
 
 .connect{
     background:#80e223;
+    color:#000;
+}
+.connect:active{
+    background: #4c8a12;
+    color:#fff;
+}
+
+
+#connection-status{
+    margin: 0 10px 0 10px;
+    color:#ffffff;
 }

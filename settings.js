@@ -2,17 +2,40 @@ let $ = require('jquery');
 var fs = require('fs');
 let mysql = require('mysql');
 let mssql = require('mssql');
+const settingsFile = './database_settings.json';
 
-
-let data = JSON.parse(fs.readFileSync('./database_settings.json','utf8'));
+let data = JSON.parse(fs.readFileSync(settingsFile,'utf8'));
 let currentPreset;
 let headerButtons = {
     "testConnection":{
           "label":"Тест соединения",
           "click":"testConnection(this)",
-          "parent":'header'
+          "parent":'header',
+          "class":'connect'
+    },
+    "saveData":{
+        "label":"Сохранить изменения",
+        "click":"getAndSaveData(this)",
+        "parent":"header",
+        "class":"save"
     }
 };
+
+function getAndSaveData(ev){
+    let need_save = false;
+    for (var sp in data[currentPreset]){
+        if ($(`input[name="${sp}"]`).val() != data[currentPreset][sp]){
+            data[currentPreset][sp] = $(`input[name="${sp}"]`).val();
+            need_save = true;
+        }
+    }
+    if(need_save){
+        fs.writeFileSync(settingsFile,JSON.stringify(data));
+        setStatus('Settings succesfully saved!');
+    } else {
+        setStatus('Data not changed!');
+    }
+}
 
 function testConnection(){
       if (currentPreset != ''){
@@ -25,7 +48,7 @@ function testConnection(){
                         return;
                         }
                         console.log('connected as id ' + connection.threadId);
-                        alert('connected as id ' + connection.threadId);
+                        setStatus('Connection succesfull. Connected as id ' + connection.threadId);
                     });
                     connection.query('select 1',(err,res,fields)=>{
                         if (err) {
@@ -40,7 +63,7 @@ function testConnection(){
                         }).then(result => {
                             console.dir(result)
                         }).catch(err => {
-                            alert('Connection error!');
+                            setStatus('Connection error!');
                             console.log(err);
                         })
                         
@@ -55,46 +78,14 @@ function testConnection(){
       }
 }
 
-/*function ThunderSelect(list){
-     this.prep_list = (()=>{
-        let ul ='';
-        for (var i = 0 ; i<list.length; i++){
-          ul +=`<li onclick="this.parentNode.setAttribute('class','closed');this.parentNode.previousElementSibling.setAttribute('class','btn-show');
-          this.parentNode.parentNode.firstElementChild.value = event.target.innerText;">${list[i]}</li>\n`;
-        }
-        return ul;
-     })();
-     this.render = ` 
-     <div class = "select">
-        <input type="text" placeholder = "Объект/файл">
-        <a name = "list-show" class = "btn-show" onclick = "openList(this)"></a>
-            <ul class = "closed">
-            ${this.prep_list}
-            </ul>
-     </div>`;    
-    
-    return this.render;
-}
-
-$('.container').append(ThunderSelect(((obj)=>{let arr = []; for(var x in obj){arr.push(x)}; return arr})(data)));
-
-function openList(event){
-    if (event.getAttribute('class') == "btn-show"){
-    event.setAttribute('class','btn-close');
-    event.nextElementSibling.setAttribute('class','opened');
-    } else {
-    event.setAttribute('class', 'btn-show');
-    event.nextElementSibling.setAttribute('class','closed');
-    }
-};*/
-
 function getList(obj){
-    let html = `<div name = "header"><span class = "lbl">Preset </span><select onchange = "showPreset(this)"><option value="-">-</option>`;
+    let html = `<div id="hd" name = "header"><span class = "lbl">Preset </span><select onchange = "showPreset(this)"><option value="-">-</option>`;
     for(var ss in obj){
         html += `<option value=${ss}>${ss}</option>`;
     }
     html +=`</select></div>`;
     $('.container').append(html);
+    console.log('after render',obj);
 };
 
 function showPreset(el){
@@ -113,11 +104,16 @@ function showPreset(el){
 function addButtons(obj){
     let html = ``;
     for (var hb in obj){
-        html =`<button class = "btn connect" name = ${hb} onclick ="${obj[hb].click}">${obj[hb].label}</button>`;
+        html =`<button class = "btn ${obj[hb].class}" name = ${hb} onclick ="${obj[hb].click}">${obj[hb].label}</button>`;
         $(`[name = "${obj[hb].parent}"]`).append(html);
     }
+    $('[name="header"]').append('<span id = "connection-status"></span>');
+}
+
+function setStatus(msg){
+     $('#connection-status').text(msg);
 }
 
 getList(data);
-
+console.log('after render 1',data);
 addButtons(headerButtons);
