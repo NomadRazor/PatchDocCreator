@@ -28,6 +28,16 @@ let descriptionPacket = {
                 "type":"text",
                 "caption":"Заказчик разработки",
                 "value":""
+            },
+            "setup-plan":{
+                "type":"textarea",
+                "caption":"План установки",
+                "value":""
+            },
+            "return-plan":{
+                "type":"textarea",
+                "caption":"План отката",
+                "value":""
             }
         }
     }

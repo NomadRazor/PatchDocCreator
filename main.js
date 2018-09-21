@@ -6,7 +6,7 @@ const {app, BrowserWindow, Menu} = require('electron')
 let mainWindow,settingWindow;
 
 function showSettingWindow(){
-  settingWindow = new BrowserWindow({width: 800, height: 240,parent:mainWindow,modal: true,resizable:false})
+  settingWindow = new BrowserWindow({width: 800, height: 240,parent:mainWindow,modal: true})
 
   // and load the index.html of the app.
   settingWindow.loadFile(`./settings.html`)

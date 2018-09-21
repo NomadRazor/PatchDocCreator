@@ -7,7 +7,7 @@
     "jquery": "^3.3.1"
   },
   "devDependencies": {
-    "electron": "^2.0.9",
+    "electron": "^2.0.10",
     "electron-builder": "^20.28.4",
     "mssql": "^4.2.1",
     "mysql": "^2.16.0"
@@ -18,8 +18,8 @@
   },
   "build": {
     "win": {
-      "target": "NSIS",
-      "icon": "/icon512.png"
+      "target": "portable",
+      "icon": "./icon512.png"
     }
   },
   "repository": "https://github.com/NomadRazor/PatchDocCreator.git",
