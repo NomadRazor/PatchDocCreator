@@ -1,20 +1,15 @@
-let $ = require('jquery');
-var fs = require('fs');
-let mysql = require('mysql');
-let mssql = require('mssql');
-let crypto = require('crypto');
+const $ = require('jquery');
+const fs = require('fs');
+const mysql = require('mysql');
+const mssql = require('mssql');
+const preset = require('./settingspreset.js');
 
-const settingsFile = './database_settings.json';
-const settingsFileEnc = './database_settings.enc';
+
+
+
 const CONNECTION_SUCCESS = "Connection successfully established!";
 const CONNECTION_ERROR = "Connection not established";
-
-let setting_template = {"mysql":{"host":"","user":"","port":"","password":"","database":""},"mssql":{"server":"","user":"","password":"","options":{"encrypt":"","database":""}}};
-
-let dataEnc = JSON.parse(fs.readFileSync(settingsFile,'utf8'));
-let data = fs.existsSync(settingsFileEnc) ? JSON.parse(DEncryptFile(settingsFileEnc,'r')) : setting_template; 
-
-console.log(data);
+const settingsFileEnc = './database_settings.enc';
 
 let currentPreset;
 let headerButtons = {
@@ -32,22 +27,7 @@ let headerButtons = {
     }
 };
 
-function DEncryptFile(file,flag,content){
-    switch (flag){
-        case "w":
-            var mykey = crypto.createCipher('aes192', 'reveal4x3m');
-            var mystr = mykey.update(content, 'utf8', 'hex')
-            mystr += mykey.final('hex');
-            fs.writeFileSync(file,mystr,{flag:'w+'});
-        break;
-        case "r":
-            var mykey = crypto.createDecipher('aes192', 'reveal4x3m');
-            var mystr = mykey.update(fs.readFileSync(file,'utf8'), 'hex', 'utf8')
-            mystr += mykey.final('utf8');
-            return mystr;
-        break;
-    }
-}
+let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(settingsFileEnc,'r')) : setting_template; 
 
 function getAndSaveData(ev){
     let need_save = false;
@@ -68,7 +48,7 @@ function getAndSaveData(ev){
     }
     if(need_save){
         /*fs.writeFileSync(settingsFile,JSON.stringify(data));*/
-        DEncryptFile(settingsFileEnc,'w',JSON.stringify(data));
+        preset.DEncryptFile(settingsFileEnc,'w',JSON.stringify(data));
         setStatus('Settings succesfully saved!');
     } else {
         setStatus('Data not changed!');

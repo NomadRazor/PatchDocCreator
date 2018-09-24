@@ -4,6 +4,11 @@ let descriptionPacket = {
         "name":"package-description",
         "caption":"Описание пакета",
         "data":{
+            "number-candoit":{
+                "type":"text",
+                "caption":"Номер задачи в Access",
+                "value":""
+            },
             "author":{
                 "type":"text",
                 "caption":"Автор",
@@ -99,7 +104,35 @@ let usedObjects = {
   }
 };
 
+let applicationDimentions = {
+    "D08":['D_BUnit',
+    'D_Measures',
+    'D_Period',
+    'D_Scenario',
+    'D_Version',
+    'D_Year',
+    'UC00 ~ Level',
+    'UC05 ~ Accounts'],
+    "D09":['D_BUnit',
+    'D_Measures',
+    'D_Period',
+    'D_Scenario',
+    'D_Version',
+    'D_Year',
+    'UC00 ~ Level',
+    'UC01 ~ Projects',
+    'UC02 ~ BudgetForms',
+    'UC03','UC04',
+    'UC05 ~ Accounts',
+    'UC06','UC07',
+    'UC08 ~ iBUnit',
+    'UC09','UC10 ~ BUnitDivision',
+    'UC11 ~ Status',
+    'UC12 ~ LegalEntity']
+}
+
 module.exports.usedObjects = usedObjects;
 module.exports.descriptionPacket = descriptionPacket;
+module.exports.applicationDimentions = applicationDimentions;
 
   

@@ -126,9 +126,9 @@ textarea:active,textarea:focus{
 }
 .center-row{
     display:grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 33% 33% 34%;
     grid-template-rows: 100%;
-    grid-template-areas: "cleanup generate";
+    grid-template-areas: "cleanup baseupload generate";
     margin: 5px 0 10px 0;
     align-items: center;
     justify-content: center;
@@ -217,6 +217,50 @@ textarea:active,textarea:focus{
     background:#c02525;
 }
 .cleanup-btn:active:after{
+    animation: none;
+    outline: none;
+}
+
+.baseupload-btn{
+    grid-area: baseupload;
+    align-self: center;
+    justify-self: center;
+    background:#4da512;
+    position: relative;
+    border:none;
+    padding:10px;
+    color:#fff;
+}
+.baseupload-btn:after{
+     content: '';
+     z-index: -1;
+     display:block;
+     position: absolute;
+     left:50%;
+     top:50%;
+     height:100%;
+     width:100%;
+     background: #4da512;
+     transition:all 0.5s ease;
+     transform:translate(-50%,-50%);
+     
+}
+.baseupload-btn:active,:hover{
+    outline: none;
+}
+@keyframes pulse{
+    0% {height:100%;
+        width:100%;opacity: 1;}
+    100% {height:160%;
+        width:120%;opacity: 0;}
+}
+.baseupload-btn:hover:after{
+    animation: pulse 1s linear infinite;   
+}
+.baseupload-btn:active{
+    background:#3a8d14;
+}
+.baseupload-btn:active:after{
     animation: none;
     outline: none;
 }
