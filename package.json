@@ -4,13 +4,15 @@
   "description": "patch doc",
   "main": "main.js",
   "dependencies": {
-    "jquery": "^3.3.1"
+    "jquery": "^3.3.1",
+    "mssql": "^4.2.1",
+    "crypto": "^1.0.1",
+    "mysql": "^2.16.0"
   },
   "devDependencies": {
     "electron": "^2.0.10",
     "electron-builder": "^20.28.4",
-    "mssql": "^4.2.1",
-    "mysql": "^2.16.0"
+    "electron-packager": "^12.1.2"
   },
   "scripts": {
     "start": "electron .",
