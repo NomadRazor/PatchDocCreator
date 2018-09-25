@@ -16,7 +16,6 @@ let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(setti
 
 let DEFAULT_DBSERVER = 'mssql';
 
-
 let settingWindow;
 
 function showSettingWindow(){
@@ -37,6 +36,53 @@ function showSettingWindow(){
   })
 }
 
+function setStyle(style){
+    let stl;
+    switch (style) {
+        case 'standart':
+            stl = "style.css"
+            break;
+        case 'dark':
+            stl = 'dark_style.css';
+        break;
+        case 'light':
+            stl = 'light_style.css';
+        break;
+    }
+    $('#style').attr('href',stl);
+    fs.writeFileSync('./style.json',`{"currentStyle":"${style}"}`,{flag:'w+'});
+}
+
+(function getStyle(){
+    let ps = new Promise((resolve,reject)=>{
+           let data = JSON.parse(fs.readFileSync('./style.json','utf8'));
+           if (typeof(data) !== 'undefined'){
+            resolve(data);
+           } else {
+            reject('readError');
+           }
+           
+    });
+    ps.then((result)=>{
+        let stl;
+        switch (result.currentStyle) {
+            case 'standart':
+            stl = "style.css"
+            break;
+            case 'dark':
+                stl = 'dark_style.css';
+            break;
+            case 'light':
+                stl = 'light_style.css';
+            break;
+        }
+        $('body').append(`<link id ="style" rel="stylesheet" href="${stl}">`)
+    });
+    
+})();
+
+
+
 let template = [
     {
       label:'Файл',
@@ -45,27 +91,6 @@ let template = [
         accelerator:'Ctrl+Shift+S',
         click:()=>{
           showSettingWindow();
-        }
-      },
-      {
-        label:'Стандартная тема',
-        accelerator:'Ctrl+Shift+D',
-        click:()=>{
-          $('#style').attr('href','style.css');
-        }
-      },
-      {
-        label:'Тёмная тема',
-        accelerator:'Ctrl+Shift+D',
-        click:()=>{
-          $('#style').attr('href','dark_style.css');
-        }
-      },
-      {
-        label:'Светлая тема',
-        accelerator:'Ctrl+Shift+L',
-        click:()=>{
-          $('#style').attr('href','light_style.css');
         }
       },
       {
@@ -93,6 +118,30 @@ let template = [
     {
       label:'Приложения',
       submenu:[]
+    },
+    {
+      label:"Тема",
+      submenu:[{
+        label:'Стандартная тема',
+        accelerator:'Ctrl+Shift+T',
+        click:()=>{
+          setStyle('standart')
+        }
+      },
+      {
+        label:'Тёмная тема',
+        accelerator:'Ctrl+Shift+D',
+        click:()=>{
+          setStyle('dark');
+        }
+      },
+      {
+        label:'Светлая тема',
+        accelerator:'Ctrl+Shift+L',
+        click:()=>{
+         setStyle('light');
+        }
+      }]
     },
     {
       label: 'Окно',
@@ -171,7 +220,6 @@ addAplication();
 
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
-
 
 function reDrawUsedObj(obj){
    let cur = obj.label;

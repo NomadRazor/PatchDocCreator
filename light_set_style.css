@@ -1,5 +1,5 @@
 body{
-    background:#202630;
+    background:#dbdbdb;
     grid-template-columns: 20% 60% 20%;
      grid-template-rows: 100%;
      grid-template-areas: ". main .";
@@ -12,22 +12,25 @@ body{
  }
  
  .lbl{
-     color:#fff;
+     color:#212222;
  }
  #hd{
      margin-bottom:10px;
  }
  input{
     padding:5px;
-    color:#fff;
+    font-size: 1em;
+    color:#212222;
     background:transparent;
     border:none;
     width:100%;
-    border-bottom: 1px solid #1290e3;
+    border-bottom: 1px solid #1d1c1c;
     box-sizing: border-box;
+    transition: all 0.7s ease;
 }
 input:active,input:focus{
     outline: none;
+    border-bottom: 1px solid #c08505;
 }
 
  select{
@@ -37,21 +40,23 @@ input:active,input:focus{
      border-radius: 5px;
      margin:3px;
      border:none;
-     color:#fff;
-     border-bottom: 1px solid #1290e3;
+     color:#212222;
+     border-bottom: 1px solid #98a7aa;
     box-sizing: border-box;
+    transition: all 0.7s ease;
      
  }
  select:focus,select:active{
      outline:none;
+     border-bottom: 1px solid #c08505;
  }
  option{
-     color:#fff;
-     background:#202630;
+     color:#212222;
+     background:#dbdbdb;
      border:none;
  }
  option:hover{
-     background: #192436;
+     background: #c08505;
  }
  .row{
     display: grid;
@@ -64,7 +69,7 @@ input:active,input:focus{
      grid-area: label;
      align-self: center;
      justify-self: center;
-     color:#fff;
+     color:#212222;
      font-size: 1em;
  }
  .row > .info{
@@ -79,8 +84,8 @@ input:active,input:focus{
     grid-area: generate;
     align-self: center;
     justify-self: center;
-    background: #0b367c;
-     color:#fff;
+    background: #c08505;
+     color:#212222;
     position: relative;
     border:none;
     padding:5px;
@@ -113,7 +118,7 @@ input:active,input:focus{
     animation: pulse 1s linear infinite;   
 }
 .btn:active{
-    background:#2062db;
+    background:#d8970a;
 }
 .btn:active:after{
     animation: none;
@@ -121,25 +126,24 @@ input:active,input:focus{
 }
 
 .connect{
-    background:#80e223;
-    color:#000;
+    background:#74b933;
+    color:#212222;
 }
 .connect:active{
-    background: #4c8a12;
-    color:#fff;
+    background: #81c73f;
+    color:#212222;
 }
 
 
 #connection-status{
     margin: 0 10px 0 10px;
-    color:#ffffff;
+    color:#212222;
 }
-
 ::-webkit-scrollbar{
     width: 5px;
-    background:#202630;
+    background:#fff;
   }
   
   ::-webkit-scrollbar-thumb{
-      background: #1290e3;
+      background: #d8970a;
   }
