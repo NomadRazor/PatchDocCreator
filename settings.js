@@ -4,9 +4,6 @@ const mysql = require('mysql');
 const mssql = require('mssql');
 const preset = require('./settingspreset.js');
 
-
-
-
 const CONNECTION_SUCCESS = "Connection successfully established!";
 const CONNECTION_ERROR = "Connection not established";
 const settingsFileEnc = './database_settings.enc';
@@ -27,7 +24,7 @@ let headerButtons = {
     }
 };
 
-let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(settingsFileEnc,'r')) : setting_template; 
+let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(settingsFileEnc,'r')) : preset.setting_template; 
 
 function getAndSaveData(ev){
     let need_save = false;

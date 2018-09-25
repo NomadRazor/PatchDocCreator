@@ -134,3 +134,13 @@ input:active,input:focus{
     margin: 0 10px 0 10px;
     color:#ffffff;
 }
+
+::-webkit-scrollbar{
+    width: 5px;
+    background:#202630;
+  }
+  
+  ::-webkit-scrollbar-thumb{
+      background: #1290e3;
+  }
+  
