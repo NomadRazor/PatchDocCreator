@@ -20,7 +20,7 @@ let DEFAULT_DBSERVER = 'mssql';
 let settingWindow;
 
 function showSettingWindow(){
-  settingWindow = new BrowserWindow({width: 800, height: 240,parent:BrowserWindow.getAllWindows()[0],modal: true})
+  settingWindow = new BrowserWindow({width: 800, height: 240,parent:BrowserWindow.getAllWindows()[0],modal: true,resizable:false})
 
   // and load the index.html of the app.
   settingWindow.loadFile(`./settings.html`)
@@ -144,7 +144,6 @@ function addAplication(){
         }
     }
     
-    console.log(arr);
 };
 
 addAplication();
@@ -158,6 +157,7 @@ function reDrawUsedObj(obj){
    usedObjects.group.data['dimentions'].list = applicationDimentions[cur];
    $('.container > div:nth-child(2)').remove();  
    drawInterface(usedObjects);
+   alert('Выбранно приложение '+cur);
 }
 
 function drawInterface (obj){
@@ -327,12 +327,12 @@ function baseUpload(){
     getValues(descriptionPacket);
     getValues(usedObjects);
     let uploadContent = getDBContent(usedObjects);
-    let sql = `update [MyTFS.Задачи] set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+    let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
     console.log(sql);
     mssql.connect(data[DEFAULT_DBSERVER],(err) => {
         new mssql.Request().query('select 1 as number',(err,res)=>{
             if (!err){
-            alert(CONNECTION_SUCCESS)
+            alert(CONNECTION_SUCCESS+' Выгрузка завершена!')
             console.dir(res);
             } else {
                 alert(CONNECTION_ERROR);
