@@ -71,31 +71,12 @@ let template = [
     },
     {
       label:'Приложения',
-      submenu:[{
-        label:'D08',
-        accelerator:'Ctrl+Shift+8',
-        click:(item, focusedWindow)=>{
-            if (focusedWindow) {
-                console.log(item);
-                reDrawUsedObj(item);
-              }
-        }
-      },
-      {
-        label:'D09',
-        accelerator:'Ctrl+Shift+9',
-        click:(item, focusedWindow)=>{
-            if (focusedWindow) {
-                console.log(item);
-                reDrawUsedObj(item);
-              }
-        }
-      }]
+      submenu:[]
     },
     {
-      label: 'View',
+      label: 'Окно',
       submenu: [{
-        label: 'Reload',
+        label: 'Обновить',
         accelerator: 'CmdOrCtrl+R',
         click: (item, focusedWindow) => {
           if (focusedWindow) {
@@ -110,7 +91,7 @@ let template = [
           }
         }
       }, {
-        label: 'Toggle Full Screen',
+        label: 'Резим "киоска" (Открыть на весь экран)',
         accelerator: (() => {
           if (process.platform === 'darwin') {
             return 'Ctrl+Command+F'
@@ -123,8 +104,8 @@ let template = [
             focusedWindow.setFullScreen(!focusedWindow.isFullScreen())
           }
         }
-      }, {
-        label: 'Toggle Developer Tools',
+      }/*, {
+        label: 'Консоль',
         accelerator: (() => {
           if (process.platform === 'darwin') {
             return 'Alt+Command+I'
@@ -137,9 +118,36 @@ let template = [
             focusedWindow.toggleDevTools()
           }
         }
-      }
+      }*/
       ]}
 ];
+
+function addAplication(){
+    let arr = [];
+    for (var item in applicationDimentions){
+        arr.push(
+            {
+                label:item,
+                accelerator:'Ctrl+Shift+'+item.split('')[2],
+                click:(item, focusedWindow)=>{
+                    if (focusedWindow) {
+                        reDrawUsedObj(item);
+                      }
+                }
+              }
+        );
+    }
+    for (var ai in template){
+        if (template[ai].label == 'Приложения'){
+            template[ai].submenu = arr;
+            break;
+        }
+    }
+    
+    console.log(arr);
+};
+
+addAplication();
 
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)

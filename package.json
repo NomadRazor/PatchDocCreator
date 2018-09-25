@@ -21,7 +21,7 @@
   "build": {
     "win": {
       "target": "portable",
-      "icon": "./icon512.png"
+      "icon": "./database.png"
     }
   },
   "repository": "https://github.com/NomadRazor/PatchDocCreator.git",
