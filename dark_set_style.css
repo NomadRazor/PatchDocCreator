@@ -1,5 +1,5 @@
 body{
-    background:#202630;
+    background:#131314;
     grid-template-columns: 20% 60% 20%;
      grid-template-rows: 100%;
      grid-template-areas: ". main .";
@@ -12,22 +12,25 @@ body{
  }
  
  .lbl{
-     color:#fff;
+     color:#a4b2b4;
  }
  #hd{
      margin-bottom:10px;
  }
  input{
     padding:5px;
-    color:#fff;
+    font-size: 1em;
+    color:#a4b2b4;
     background:transparent;
     border:none;
     width:100%;
-    border-bottom: 1px solid #1290e3;
+    border-bottom: 1px solid #98a7aa;
     box-sizing: border-box;
+    transition: all 0.7s ease;
 }
 input:active,input:focus{
     outline: none;
+    border-bottom: 1px solid #731580;
 }
 
  select{
@@ -37,21 +40,23 @@ input:active,input:focus{
      border-radius: 5px;
      margin:3px;
      border:none;
-     color:#fff;
-     border-bottom: 1px solid #1290e3;
+     color:#a4b2b4;
+     border-bottom: 1px solid #98a7aa;
     box-sizing: border-box;
+    transition: all 0.7s ease;
      
  }
  select:focus,select:active{
      outline:none;
+     border-bottom: 1px solid #641d61;
  }
  option{
-     color:#fff;
-     background:#202630;
+     color:#a4b2b4;
+     background:#131314;
      border:none;
  }
  option:hover{
-     background: #192436;
+     background: #771772;
  }
  .row{
     display: grid;
@@ -79,7 +84,7 @@ input:active,input:focus{
     grid-area: generate;
     align-self: center;
     justify-self: center;
-    background: #0b367c;
+    background: #771772;
      color:#fff;
     position: relative;
     border:none;
@@ -121,25 +126,25 @@ input:active,input:focus{
 }
 
 .connect{
-    background:#80e223;
-    color:#000;
+    background:#3f6b16;
+    color:#fff;
 }
 .connect:active{
-    background: #4c8a12;
+    background: #3c6d0e;
     color:#fff;
 }
 
 
 #connection-status{
     margin: 0 10px 0 10px;
-    color:#ffffff;
+    color:#a4b2b4;
 }
-
 ::-webkit-scrollbar{
     width: 5px;
-    background:#202630;
+    background:#161618;
   }
   
   ::-webkit-scrollbar-thumb{
-      background: #1290e3;
+      background: #641d61;
   }
+  

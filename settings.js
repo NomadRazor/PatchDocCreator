@@ -4,9 +4,6 @@ const mysql = require('mysql');
 const mssql = require('mssql');
 const preset = require('./settingspreset.js');
 
-
-
-
 const CONNECTION_SUCCESS = "Connection successfully established!";
 const CONNECTION_ERROR = "Connection not established";
 const settingsFileEnc = './database_settings.enc';
@@ -27,7 +24,35 @@ let headerButtons = {
     }
 };
 
-let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(settingsFileEnc,'r')) : setting_template; 
+(function getStyle(){
+    let ps = new Promise((resolve,reject)=>{
+           let data = JSON.parse(fs.readFileSync('./style.json','utf8'));
+           if (typeof(data) !== 'undefined'){
+            resolve(data);
+           } else {
+            reject('readError');
+           }
+           
+    });
+    ps.then((result)=>{
+        let stl;
+        switch (result.currentStyle) {
+            case 'standart':
+            stl = "settings_style.css"
+            break;
+            case 'dark':
+                stl = 'dark_set_style.css';
+            break;
+            case 'light':
+                stl = 'light_set_style.css';
+            break;
+        }
+        $('body').append(`<link id ="style" rel="stylesheet" href="${stl}">`)
+    });
+    
+})();
+
+let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(settingsFileEnc,'r')) : preset.setting_template; 
 
 function getAndSaveData(ev){
     let need_save = false;
@@ -96,7 +121,7 @@ function testConnection(){
 }
 
 function getList(obj){
-    let html = `<div id="hd" name = "header"><span class = "lbl">Preset </span><select onchange = "showPreset(this)"><option value="-">-</option>`;
+    let html = `<div id="hd" name = "header"><span class = "lbl">Выбор сервера:  </span><select onchange = "showPreset(this)"><option value="-">-</option>`;
     for(var ss in obj){
         html += `<option value=${ss}>${ss}</option>`;
     }

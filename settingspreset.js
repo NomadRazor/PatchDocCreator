@@ -1,6 +1,6 @@
 let crypto = require('crypto');
 
-let setting_template = {"mysql":{"host":"","user":"","port":"","password":"","database":""},"mssql":{"server":"","user":"","password":"","options":{"encrypt":"","database":""}}};
+let setting_template = {"mysql":{"host":"","user":"","port":"","password":"","database":""},"mssql":{"server":"","user":"","password":"","options":{ "trusted_connection":"","encrypt":"","database":""}}};
 
 function DEncryptFile(file,flag,content){
     switch (flag){
@@ -12,7 +12,7 @@ function DEncryptFile(file,flag,content){
         break;
         case "r":
             var mykey = crypto.createDecipher('aes192', 'reveal4x3m');
-            var mystr = mykey.update(fs.readFileSync(file,'utf8'), 'hex', 'utf8')
+            var mystr = mykey.update(fs.readFileSync(file,'utf8'), 'hex', 'utf8');
             mystr += mykey.final('utf8');
             return mystr;
         break;

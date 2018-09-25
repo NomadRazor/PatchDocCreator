@@ -16,11 +16,10 @@ let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(setti
 
 let DEFAULT_DBSERVER = 'mssql';
 
-
 let settingWindow;
 
 function showSettingWindow(){
-  settingWindow = new BrowserWindow({width: 800, height: 240,parent:BrowserWindow.getAllWindows()[0],modal: true,resizable:false})
+  settingWindow = new BrowserWindow({width: 800, height: 260,parent:BrowserWindow.getAllWindows()[0],modal: true,resizable:false})
 
   // and load the index.html of the app.
   settingWindow.loadFile(`./settings.html`)
@@ -36,6 +35,53 @@ function showSettingWindow(){
     settingWindow = null
   })
 }
+
+function setStyle(style){
+    let stl;
+    switch (style) {
+        case 'standart':
+            stl = "style.css"
+            break;
+        case 'dark':
+            stl = 'dark_style.css';
+        break;
+        case 'light':
+            stl = 'light_style.css';
+        break;
+    }
+    $('#style').attr('href',stl);
+    fs.writeFileSync('./style.json',`{"currentStyle":"${style}"}`,{flag:'w+'});
+}
+
+(function getStyle(){
+    let ps = new Promise((resolve,reject)=>{
+           let data = JSON.parse(fs.readFileSync('./style.json','utf8'));
+           if (typeof(data) !== 'undefined'){
+            resolve(data);
+           } else {
+            reject('readError');
+           }
+           
+    });
+    ps.then((result)=>{
+        let stl;
+        switch (result.currentStyle) {
+            case 'standart':
+            stl = "style.css"
+            break;
+            case 'dark':
+                stl = 'dark_style.css';
+            break;
+            case 'light':
+                stl = 'light_style.css';
+            break;
+        }
+        $('body').append(`<link id ="style" rel="stylesheet" href="${stl}">`)
+    });
+    
+})();
+
+
 
 let template = [
     {
@@ -72,6 +118,30 @@ let template = [
     {
       label:'Приложения',
       submenu:[]
+    },
+    {
+      label:"Тема",
+      submenu:[{
+        label:'Стандартная тема',
+        accelerator:'Ctrl+Shift+T',
+        click:()=>{
+          setStyle('standart')
+        }
+      },
+      {
+        label:'Тёмная тема',
+        accelerator:'Ctrl+Shift+D',
+        click:()=>{
+          setStyle('dark');
+        }
+      },
+      {
+        label:'Светлая тема',
+        accelerator:'Ctrl+Shift+L',
+        click:()=>{
+         setStyle('light');
+        }
+      }]
     },
     {
       label: 'Окно',
@@ -150,7 +220,6 @@ addAplication();
 
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
-
 
 function reDrawUsedObj(obj){
    let cur = obj.label;
