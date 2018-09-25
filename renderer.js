@@ -48,6 +48,27 @@ let template = [
         }
       },
       {
+        label:'Стандартная тема',
+        accelerator:'Ctrl+Shift+D',
+        click:()=>{
+          $('#style').attr('href','style.css');
+        }
+      },
+      {
+        label:'Тёмная тема',
+        accelerator:'Ctrl+Shift+D',
+        click:()=>{
+          $('#style').attr('href','dark_style.css');
+        }
+      },
+      {
+        label:'Светлая тема',
+        accelerator:'Ctrl+Shift+L',
+        click:()=>{
+          $('#style').attr('href','light_style.css');
+        }
+      },
+      {
         label:'Отчистить ввод',
         accelerator:'Ctrl+X',
         click:()=>{
