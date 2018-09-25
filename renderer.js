@@ -19,11 +19,11 @@ let DEFAULT_DBSERVER = 'mssql';
 let settingWindow;
 
 function showSettingWindow(){
-  settingWindow = new BrowserWindow({width: 800, height: 260,parent:BrowserWindow.getAllWindows()[0],modal: true,resizable:false})
+  settingWindow = new BrowserWindow({width: 800, height: 260,parent:BrowserWindow.getAllWindows()[0],modal: true,resizable:false,autoHideMenuBar:true})
 
   // and load the index.html of the app.
   settingWindow.loadFile(`./settings.html`)
-
+  settingWindow.setMenu(null);
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
@@ -83,7 +83,7 @@ function setStyle(style){
 
 
 
-let template = [
+let template = [ //menu template
     {
       label:'Файл',
       submenu:[{
@@ -229,7 +229,7 @@ function reDrawUsedObj(obj){
    alert('Выбранно приложение '+cur);
 }
 
-function drawInterface (obj){
+function drawInterface (obj){ // generate programm interface from json object (interface.js)
     let gr = obj.group;
     $(`.${obj.parent}`).append(`<div class="expander" name = "${gr.name}"></div>`);
     let groupParent = $(`div[name="${gr.name}"]`);
@@ -311,7 +311,7 @@ function drawInterface (obj){
 drawInterface(descriptionPacket);
 drawInterface(usedObjects);
 
-$('div.row-info[type = "info"] > .next-row').on('click',(event)=>{
+$('div.row-info[type = "info"] > .next-row').on('click',(event)=>{ //add next row for used object where type not select
     $('div[name="'+$(event.target).attr('data-append')+'"]').append(`<div name = "${$(event.target).attr('data-rv')}" class = "row-info">
     <span class="label"></span>
     <input data-rv = "${$(event.target).attr('data-rv')}-main" class ="data" type = "text" placeholder = "Объект/файл">
@@ -324,7 +324,7 @@ $('div.row-info[type = "info"] > .next-row').on('click',(event)=>{
         $(event.target).parent().remove();
      });
 });
-$('div.row-info[type="info-select"] > .next-row').on('click',(event)=>{
+$('div.row-info[type="info-select"] > .next-row').on('click',(event)=>{//add next row for used object where type select
     let ul ='';
     for (var i = 0 ; i<usedObjects.group.data[$(event.target).attr('data-append').split('-')[0]].list.length; i++){
       ul +=`<li>${usedObjects.group.data[$(event.target).attr('data-append').split('-')[0]].list[i]}</li>\n`;
@@ -369,13 +369,6 @@ $('div.row-info[type="info-select"] > .next-row').on('click',(event)=>{
     });
 });
 
-/*$(`.container`).append(`
-<div class = "center-row">
-        <button class = "cleanup-btn">Очистить ввод</button>
-        <button class = "generate-btn">Сгенерировать файл</button>
-        <button class = "baseupload-btn">Загрузить в базу</button>
-</div> `);*/
-
 function cleanupInput(){
     clearValues(descriptionPacket);
    clearValues(usedObjects);
@@ -399,10 +392,10 @@ function baseUpload(){
     let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
     console.log(sql);
     mssql.connect(data[DEFAULT_DBSERVER],(err) => {
-        new mssql.Request().query(sql,(err,res)=>{
+        new mssql.Request().query('select 1 as number',(err,res)=>{
             if (!err){
-            alert(CONNECTION_SUCCESS+' Выгрузка завершена!')
-            console.dir(res);
+            alert(CONNECTION_SUCCESS+' Выгрузка завершена!');
+            console.dir(sql,res);
             } else {
                 alert(CONNECTION_ERROR);
                 console.dir(CONNECTION_ERROR,err.stack);
@@ -412,7 +405,7 @@ function baseUpload(){
     mssql.close();
 }
 
-function getDBContent(obj){
+function getDBContent(obj){ // generate content for used objects for upload to database
     let gr = obj.group;
     let content = ``;
    for (var ss in gr.data){
@@ -443,7 +436,7 @@ function getDBContent(obj){
    return content;
 }
 
-function getValues(obj){
+function getValues(obj){ 
     let gr = obj.group;
     for (var ss in gr.data){
         switch (gr.data[ss].type) {
@@ -516,7 +509,7 @@ function clearValues(obj){
     }
 };
 
-function drawInterfaceData (obj){
+function drawInterfaceData (obj){ // generate html path for patch file
     let gr = obj.group;
     let html = ``;
     html += `<div class="expander" name = "${gr.name}">`;
@@ -568,7 +561,7 @@ function drawInterfaceData (obj){
    return html+'</div>';
 };
 
-function prepareContent(){
+function prepareContent(){ // generate content of patch file
 
     let resultContent = `
     <!DOCTYPE html>
