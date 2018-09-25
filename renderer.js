@@ -12,7 +12,7 @@ const CONNECTION_SUCCESS = "Connection successfully established!";
 const CONNECTION_ERROR = "Connection not established";
 const settingsFileEnc = './database_settings.enc';
  
-let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(settingsFileEnc,'r')) : setting_template;
+let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(settingsFileEnc,'r')) : preset.setting_template;
 
 let DEFAULT_DBSERVER = 'mssql';
 
@@ -104,7 +104,7 @@ let template = [
             focusedWindow.setFullScreen(!focusedWindow.isFullScreen())
           }
         }
-      }/*, {
+      }, {
         label: 'Консоль',
         accelerator: (() => {
           if (process.platform === 'darwin') {
@@ -118,7 +118,7 @@ let template = [
             focusedWindow.toggleDevTools()
           }
         }
-      }*/
+      }
       ]}
 ];
 
@@ -330,7 +330,7 @@ function baseUpload(){
     let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
     console.log(sql);
     mssql.connect(data[DEFAULT_DBSERVER],(err) => {
-        new mssql.Request().query('select 1 as number',(err,res)=>{
+        new mssql.Request().query(sql,(err,res)=>{
             if (!err){
             alert(CONNECTION_SUCCESS+' Выгрузка завершена!')
             console.dir(res);
