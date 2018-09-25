@@ -1,10 +1,164 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-let {usedObjects, descriptionPacket} = require('./interface.js');
+let {applicationDimentions,usedObjects, descriptionPacket} = require('./interface.js');
 let $ = require('jquery');
-let {dialog} = require('electron').remote;
-var fs = require('fs');
+let {dialog, Menu, BrowserWindow} = require('electron').remote;
+const fs = require('fs');
+const mssql = require('mssql');
+const preset = require('./settingspreset.js');
+
+const CONNECTION_SUCCESS = "Connection successfully established!";
+const CONNECTION_ERROR = "Connection not established";
+const settingsFileEnc = './database_settings.enc';
+ 
+let data = fs.existsSync(settingsFileEnc) ? JSON.parse(preset.DEncryptFile(settingsFileEnc,'r')) : setting_template;
+
+let DEFAULT_DBSERVER = 'mssql';
+
+
+let settingWindow;
+
+function showSettingWindow(){
+  settingWindow = new BrowserWindow({width: 800, height: 240,parent:BrowserWindow.getAllWindows()[0],modal: true})
+
+  // and load the index.html of the app.
+  settingWindow.loadFile(`./settings.html`)
+
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
+
+  // Emitted when the window is closed.
+  settingWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    settingWindow = null
+  })
+}
+
+let template = [
+    {
+      label:'Файл',
+      submenu:[{
+        label:'Настройка подключения к БД',
+        accelerator:'Ctrl+Shift+S',
+        click:()=>{
+          showSettingWindow();
+        }
+      },
+      {
+        label:'Отчистить ввод',
+        accelerator:'Ctrl+X',
+        click:()=>{
+          cleanupInput();
+        }
+      },
+      {
+        label:'Выгрузить в Access',
+        accelerator:'Ctrl+B',
+        click:()=>{
+          baseUpload();
+        }
+      },
+      {
+        label:'Сгенерировать файл патча',
+        accelerator:'Ctrl+P',
+        click:()=>{
+          generateFile();
+        }
+      }]
+    },
+    {
+      label:'Приложения',
+      submenu:[]
+    },
+    {
+      label: 'Окно',
+      submenu: [{
+        label: 'Обновить',
+        accelerator: 'CmdOrCtrl+R',
+        click: (item, focusedWindow) => {
+          if (focusedWindow) {
+            // on reload, start fresh and close any old
+            // open secondary windows
+            if (focusedWindow.id === 1) {
+              BrowserWindow.getAllWindows().forEach(win => {
+                if (win.id > 1) win.close()
+              })
+            }
+            focusedWindow.reload()
+          }
+        }
+      }, {
+        label: 'Резим "киоска" (Открыть на весь экран)',
+        accelerator: (() => {
+          if (process.platform === 'darwin') {
+            return 'Ctrl+Command+F'
+          } else {
+            return 'F11'
+          }
+        })(),
+        click: (item, focusedWindow) => {
+          if (focusedWindow) {
+            focusedWindow.setFullScreen(!focusedWindow.isFullScreen())
+          }
+        }
+      }/*, {
+        label: 'Консоль',
+        accelerator: (() => {
+          if (process.platform === 'darwin') {
+            return 'Alt+Command+I'
+          } else {
+            return 'Ctrl+Shift+I'
+          }
+        })(),
+        click: (item, focusedWindow) => {
+          if (focusedWindow) {
+            focusedWindow.toggleDevTools()
+          }
+        }
+      }*/
+      ]}
+];
+
+function addAplication(){
+    let arr = [];
+    for (var item in applicationDimentions){
+        arr.push(
+            {
+                label:item,
+                accelerator:'Ctrl+Shift+'+item.split('')[2],
+                click:(item, focusedWindow)=>{
+                    if (focusedWindow) {
+                        reDrawUsedObj(item);
+                      }
+                }
+              }
+        );
+    }
+    for (var ai in template){
+        if (template[ai].label == 'Приложения'){
+            template[ai].submenu = arr;
+            break;
+        }
+    }
+    
+    console.log(arr);
+};
+
+addAplication();
+
+const menu = Menu.buildFromTemplate(template)
+Menu.setApplicationMenu(menu)
+
+
+function reDrawUsedObj(obj){
+   let cur = obj.label;
+   usedObjects.group.data['dimentions'].list = applicationDimentions[cur];
+   $('.container > div:nth-child(2)').remove();  
+   drawInterface(usedObjects);
+}
 
 function drawInterface (obj){
     let gr = obj.group;
@@ -146,18 +300,19 @@ $('div.row-info[type="info-select"] > .next-row').on('click',(event)=>{
     });
 });
 
-$(`.container`).append(`
+/*$(`.container`).append(`
 <div class = "center-row">
         <button class = "cleanup-btn">Очистить ввод</button>
         <button class = "generate-btn">Сгенерировать файл</button>
-</div> `);
+        <button class = "baseupload-btn">Загрузить в базу</button>
+</div> `);*/
 
-$('.cleanup-btn').on('click',()=>{
-   clearValues(descriptionPacket);
+function cleanupInput(){
+    clearValues(descriptionPacket);
    clearValues(usedObjects);
-});
+}
 
-$('.generate-btn').on('click',()=>{
+function generateFile(){
     getValues(descriptionPacket);
     getValues(usedObjects);
    dialog.showSaveDialog((fileName)=>{
@@ -166,7 +321,58 @@ $('.generate-btn').on('click',()=>{
      }
      fs.writeFile(fileName.indexOf('.html') != -1 ? fileName : fileName+'.html' ,prepareContent(),(error)=>{ if (error) {console.log(error)}});
    });  
-});
+}
+
+function baseUpload(){
+    getValues(descriptionPacket);
+    getValues(usedObjects);
+    let uploadContent = getDBContent(usedObjects);
+    let sql = `update [MyTFS.Задачи] set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+    console.log(sql);
+    mssql.connect(data[DEFAULT_DBSERVER],(err) => {
+        new mssql.Request().query('select 1 as number',(err,res)=>{
+            if (!err){
+            alert(CONNECTION_SUCCESS)
+            console.dir(res);
+            } else {
+                alert(CONNECTION_ERROR);
+                console.dir(CONNECTION_ERROR,err.stack);
+            }
+        });
+    });
+    mssql.close();
+}
+
+function getDBContent(obj){
+    let gr = obj.group;
+    let content = ``;
+   for (var ss in gr.data){
+       switch (gr.data[ss].type) {
+           case "text":
+           case "date":
+           content +=` ${gr.data[ss].caption}:${gr.data[ss].value};`;
+               break;
+           case "textarea":
+           content += ` ${gr.data[ss].caption}: ${gr.data[ss].value};`; 
+               break;
+           case "info-select":
+           case "info":
+           if (gr.data[ss].values.length > 0){
+            content +=`${gr.data[ss].caption != ''? gr.data[ss].caption+' [ ' : ''}`;
+           for (var ln = 0; ln<gr.data[ss].values.length;ln++){
+            content +=`${gr.data[ss].values[ln].main}:${gr.data[ss].values[ln].info};`;  
+                }
+            content+=' ]\n';
+            } else {
+                content +='';
+            }
+               break;
+           default:
+               break;
+       }
+   }
+   return content;
+}
 
 function getValues(obj){
     let gr = obj.group;
