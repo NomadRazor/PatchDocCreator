@@ -19,7 +19,7 @@ let DEFAULT_DBSERVER = 'mssql';
 let settingWindow;
 
 function showSettingWindow(){
-  settingWindow = new BrowserWindow({width: 800, height: 260,parent:BrowserWindow.getAllWindows()[0],modal: true,resizable:false})
+  settingWindow = new BrowserWindow({width: 800, height: 260,parent:BrowserWindow.getAllWindows()[0],modal: true,resizable:false,autoHideMenuBar:true})
 
   // and load the index.html of the app.
   settingWindow.loadFile(`./settings.html`)
