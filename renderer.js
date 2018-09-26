@@ -377,7 +377,21 @@ $('div.row-info[type="info-select"] > .next-row').on('click',(event)=>{//add nex
     });
     });
 });
+
 };
+
+/*
+ mssql.close();
+  mssql.connect(dbConfig).then(server=>{
+    server.request().query(sql).then(rows=>{
+     
+    });
+   server.on('error',err=>{console.log(err);});
+  });
+
+*/
+
+
 function cleanupInput(){
     clearValues(descriptionPacket);
    clearValues(usedObjects);
@@ -398,24 +412,12 @@ function baseUpload(){
     getValues(descriptionPacket);
     getValues(usedObjects);
     let uploadContent = getDBContent(usedObjects);
-   /* let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+    let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
     console.log(sql);
-    mssql.connect(data[DEFAULT_DBSERVER],(err) => {
-        new mssql.Request().query('select 1 as number',(err,res)=>{
-            if (!err){
-            alert(CONNECTION_SUCCESS+' Выгрузка завершена!');
-            console.dir(sql,res);
-            } else {
-                alert(CONNECTION_ERROR);
-                console.dir(CONNECTION_ERROR,err.stack);
-            }
-        });
-        mssql.close();
-    });*/
-    mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
-        return mssql.query `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`
+       mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
+        return mssql.query(`update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`);
     }).then((res)=>{
-        alert(CONNECTION_SUCCESS+' Выгрузка завершена!');
+        alert(' Выгрузка завершена! ');
         mssql.close();
     }).catch((err)=>{
         alert(CONNECTION_ERROR);
@@ -430,18 +432,23 @@ function baseUpload(){
 }
 
 function baseDownload(){
-    /*let sql = `select (select Ф+' '+И+' '+О from MyTFS.Задачи where TabNo = [Исполнитель]) autor,
-               '('+[Департамент_заказчика]+') '+[Постановщик] customer, 
-               isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]
-               where [Номер] = '${$('[name="number-candoit"]').val()}'`;*/
+    let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Задачи where TabNo = [Исполнитель]) autor, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description] where [Номер] = '${$('[name="number-candoit"]').val()}'`;
+    console.log(sql);
+    mssql.close();
+    mssql.connect(dbConfig).then(server=>{
+    server.request().query(sql).then(rows=>{
+        for (var item in res.recordset[0]){
+            $(`[name="${item}"]`).val(res.recordset[0][item]);
+        }
+        alert(' Загрузка завершена! ');
+        mssql.close();
+    });
+   server.on('error',err=>{console.log(err);});
+  });
 
-
-    mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
+  /*  mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
         console.log(CONNECTION_SUCCESS)
-        return mssql.query `select (select Ф+' '+И+' '+О from MyTFS.Задачи where TabNo = [Исполнитель]) autor,
-        '('+[Департамент_заказчика]+') '+[Постановщик] customer, 
-        isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description] from MyTFS.Задачи
-        where [Номер] = '${$('[name="number-candoit"]').val()}'`
+        return mssql.query (`select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Задачи where TabNo = [Исполнитель]) autor, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description] from MyTFS.Задачи where [Номер] = '${$('[name="number-candoit"]').val()}'`)
     }).then((res)=>{
         alert(' Загрузка завершена! ');
         for (var item in res.recordset[0]){
@@ -451,7 +458,7 @@ function baseDownload(){
     }).catch((err)=>{
         alert(CONNECTION_ERROR);
         mssql.close();
-    });
+    });*/
    
     mssql.on('error',(err)=>{
         console.dir(err);
