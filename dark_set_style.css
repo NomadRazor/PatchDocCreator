@@ -1,5 +1,5 @@
 body{
-    background:#131314;
+    background:#1f1f1f;
     grid-template-columns: 20% 60% 20%;
      grid-template-rows: 100%;
      grid-template-areas: ". main .";
