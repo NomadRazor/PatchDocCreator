@@ -1,6 +1,6 @@
 let crypto = require('crypto');
 
-let setting_template = {"mysql":{"host":"","user":"","port":"","password":"","database":""},"mssql":{"server":"","user":"","password":"","options":{ "trusted_connection":"","encrypt":"","database":""}}};
+let setting_template = JSON.parse(fs.readFileSync('./setting_template.json','utf8'));
 
 function DEncryptFile(file,flag,content){
     switch (flag){

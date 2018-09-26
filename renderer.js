@@ -23,7 +23,7 @@ function showSettingWindow(){
 
   // and load the index.html of the app.
   settingWindow.loadFile(`./settings.html`)
-  settingWindow.setMenu(null);
+  //settingWindow.setMenu(null);
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
@@ -102,9 +102,16 @@ let template = [ //menu template
       },
       {
         label:'Выгрузить в Access',
-        accelerator:'Ctrl+B',
+        accelerator:'Ctrl+U',
         click:()=>{
           baseUpload();
+        }
+      },
+      {
+        label:'Загрузить из Access',
+        accelerator:'Ctrl+D',
+        click:()=>{
+          baseDownload();
         }
       },
       {
@@ -226,6 +233,7 @@ function reDrawUsedObj(obj){
    usedObjects.group.data['dimentions'].list = applicationDimentions[cur];
    $('.container > div:nth-child(2)').remove();  
    drawInterface(usedObjects);
+   applyRowAdding();
    alert('Выбранно приложение '+cur);
 }
 
@@ -310,7 +318,8 @@ function drawInterface (obj){ // generate programm interface from json object (i
 
 drawInterface(descriptionPacket);
 drawInterface(usedObjects);
-
+applyRowAdding();
+function applyRowAdding(){
 $('div.row-info[type = "info"] > .next-row').on('click',(event)=>{ //add next row for used object where type not select
     $('div[name="'+$(event.target).attr('data-append')+'"]').append(`<div name = "${$(event.target).attr('data-rv')}" class = "row-info">
     <span class="label"></span>
@@ -369,6 +378,20 @@ $('div.row-info[type="info-select"] > .next-row').on('click',(event)=>{//add nex
     });
 });
 
+};
+
+/*
+ mssql.close();
+  mssql.connect(dbConfig).then(server=>{
+    server.request().query(sql).then(rows=>{
+     
+    });
+   server.on('error',err=>{console.log(err);});
+  });
+
+*/
+
+
 function cleanupInput(){
     clearValues(descriptionPacket);
    clearValues(usedObjects);
@@ -391,18 +414,57 @@ function baseUpload(){
     let uploadContent = getDBContent(usedObjects);
     let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
     console.log(sql);
-    mssql.connect(data[DEFAULT_DBSERVER],(err) => {
-        new mssql.Request().query('select 1 as number',(err,res)=>{
-            if (!err){
-            alert(CONNECTION_SUCCESS+' Выгрузка завершена!');
-            console.dir(sql,res);
-            } else {
-                alert(CONNECTION_ERROR);
-                console.dir(CONNECTION_ERROR,err.stack);
-            }
-        });
+       mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
+        return mssql.query(`update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`);
+    }).then((res)=>{
+        alert(' Выгрузка завершена! ');
+        mssql.close();
+    }).catch((err)=>{
+        alert(CONNECTION_ERROR);
+        mssql.close();
     });
+   
+    mssql.on('error',(err)=>{
+        console.dir(err);
+        mssql.close();
+    });
+    
+}
+
+function baseDownload(){
+    let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Задачи where TabNo = [Исполнитель]) autor, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description] where [Номер] = '${$('[name="number-candoit"]').val()}'`;
+    console.log(sql);
     mssql.close();
+    mssql.connect(dbConfig).then(server=>{
+    server.request().query(sql).then(rows=>{
+        for (var item in res.recordset[0]){
+            $(`[name="${item}"]`).val(res.recordset[0][item]);
+        }
+        alert(' Загрузка завершена! ');
+        mssql.close();
+    });
+   server.on('error',err=>{console.log(err);});
+  });
+
+  /*  mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
+        console.log(CONNECTION_SUCCESS)
+        return mssql.query (`select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Задачи where TabNo = [Исполнитель]) autor, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description] from MyTFS.Задачи where [Номер] = '${$('[name="number-candoit"]').val()}'`)
+    }).then((res)=>{
+        alert(' Загрузка завершена! ');
+        for (var item in res.recordset[0]){
+            $(`[name="${item}"]`).val(res.recordset[0][item]);
+        }
+        mssql.close();
+    }).catch((err)=>{
+        alert(CONNECTION_ERROR);
+        mssql.close();
+    });*/
+   
+    mssql.on('error',(err)=>{
+        console.dir(err);
+        mssql.close();
+    });
+    
 }
 
 function getDBContent(obj){ // generate content for used objects for upload to database

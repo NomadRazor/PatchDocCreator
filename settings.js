@@ -60,7 +60,11 @@ function getAndSaveData(ev){
         if (typeof(data[currentPreset][sp])==='object'){
             for (var svr in data[currentPreset][sp]){
                 if ($(`input[name="${sp}-${svr}"]`).val() != data[currentPreset][sp][svr]){
-                    data[currentPreset][sp][svr] = $(`input[name="${sp}-${svr}"]`).val();
+                    if ($(`input[name="${sp}-${svr}"]`).val() == 'true' || $(`input[name="${sp}-${svr}"]`).val() == 'false'){
+                        data[currentPreset][sp][svr] = JSON.parse($(`input[name="${sp}-${svr}"]`).val());
+                    } else {
+                        data[currentPreset][sp][svr] = $(`input[name="${sp}-${svr}"]`).val();
+                    }
                     need_save = true;
                 }
             }
@@ -100,8 +104,9 @@ function testConnection(){
                     connection.end();
                   break;
               case "mssql":
-                    mssql.connect(data[currentPreset],(err) => {
-                        new mssql.Request().query('select 1 as number',(err,res)=>{
+                    /*mssql.connect(data[currentPreset],(err) => {
+                       let request = new mssql.Request();
+                       request.query("select 1 as 'number'",(err,res)=>{
                             if (!err){
                             setStatus(CONNECTION_SUCCESS)
                             console.dir(res);
@@ -111,7 +116,25 @@ function testConnection(){
                             }
                         });
                     });
-                    mssql.close();
+                    mssql.close();*/
+                    
+                    mssql.connect(data[currentPreset]).then(()=>{
+                        return mssql.query `select 1 as 'number'`
+                    }).then((res)=>{
+                        setStatus(CONNECTION_SUCCESS)
+                        console.dir(res);
+                        mssql.close();
+                    }).catch((err)=>{
+                        setStatus(CONNECTION_ERROR);
+                        console.dir(CONNECTION_ERROR,err);
+                        mssql.close();
+                    });
+                   
+                    mssql.on('error',(err)=>{
+                        console.dir(err);
+                        mssql.close();
+                    });
+                    
               break;
               default:
                   break;
