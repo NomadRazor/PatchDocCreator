@@ -435,7 +435,7 @@ function baseDownload(){
     let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Задачи where TabNo = [Исполнитель]) autor, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description] where [Номер] = '${$('[name="number-candoit"]').val()}'`;
     console.log(sql);
     mssql.close();
-    mssql.connect(dbConfig).then(server=>{
+    mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
     server.request().query(sql).then(rows=>{
         for (var item in res.recordset[0]){
             $(`[name="${item}"]`).val(res.recordset[0][item]);
