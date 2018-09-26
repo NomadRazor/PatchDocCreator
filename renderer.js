@@ -102,14 +102,14 @@ let template = [ //menu template
       },
       {
         label:'Выгрузить в Access',
-        accelerator:'Ctrl+B',
+        accelerator:'Ctrl+U',
         click:()=>{
           baseUpload();
         }
       },
       {
         label:'Загрузить из Access',
-        accelerator:'Ctrl+B',
+        accelerator:'Ctrl+D',
         click:()=>{
           baseDownload();
         }
@@ -398,9 +398,9 @@ function baseUpload(){
     getValues(descriptionPacket);
     getValues(usedObjects);
     let uploadContent = getDBContent(usedObjects);
-    let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+   /* let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
     console.log(sql);
-  /*  mssql.connect(data[DEFAULT_DBSERVER],(err) => {
+    mssql.connect(data[DEFAULT_DBSERVER],(err) => {
         new mssql.Request().query('select 1 as number',(err,res)=>{
             if (!err){
             alert(CONNECTION_SUCCESS+' Выгрузка завершена!');
@@ -413,7 +413,7 @@ function baseUpload(){
         mssql.close();
     });*/
     mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
-        return mssql.query `${sql}`
+        return mssql.query `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`
     }).then((res)=>{
         alert(CONNECTION_SUCCESS+' Выгрузка завершена!');
         mssql.close();
@@ -430,16 +430,23 @@ function baseUpload(){
 }
 
 function baseDownload(){
-    let sql = `select (select Ф+' '+И+' '+О from MyTFS.Задачи where TabNo = [Исполнитель]) autor,
+    /*let sql = `select (select Ф+' '+И+' '+О from MyTFS.Задачи where TabNo = [Исполнитель]) autor,
                '('+[Департамент_заказчика]+') '+[Постановщик] customer, 
                isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]
-               where [Номер] = '${$('[name="number-candoit"]').val()}'`;
-    console.log(sql);
+               where [Номер] = '${$('[name="number-candoit"]').val()}'`;*/
+
+
     mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
-        return mssql.query `${sql}`
+        console.log(CONNECTION_SUCCESS)
+        return mssql.query `select (select Ф+' '+И+' '+О from MyTFS.Задачи where TabNo = [Исполнитель]) autor,
+        '('+[Департамент_заказчика]+') '+[Постановщик] customer, 
+        isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description] from MyTFS.Задачи
+        where [Номер] = '${$('[name="number-candoit"]').val()}'`
     }).then((res)=>{
-        alert(CONNECTION_SUCCESS+' Загрузка завершена!');
-        console.log(res);
+        alert(' Загрузка завершена! ');
+        for (var item in res.recordset[0]){
+            $(`[name="${item}"]`).val(res.recordset[0][item]);
+        }
         mssql.close();
     }).catch((err)=>{
         alert(CONNECTION_ERROR);

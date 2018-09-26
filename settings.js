@@ -117,6 +117,7 @@ function testConnection(){
                         });
                     });
                     mssql.close();*/
+                    
                     mssql.connect(data[currentPreset]).then(()=>{
                         return mssql.query `select 1 as 'number'`
                     }).then((res)=>{
