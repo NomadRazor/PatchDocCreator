@@ -413,7 +413,6 @@ function baseUpload(){
     getValues(usedObjects);
     let uploadContent = getDBContent(usedObjects);
     let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
-    console.log(sql);
     mssql.close();
     mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
     server.request().query(sql).then(rows=>{
@@ -442,8 +441,7 @@ function baseUpload(){
 }
 
 function baseDownload(){
-    let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Исполнители where TabNo = [Исполнитель]) autor, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]  from MyTFS.Задачи  where [Номер] = '${$('[name="number-candoit"]').val()}'`;
-    console.log(sql);
+    let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Исполнители where TabNo = [Исполнитель]) author, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]  from MyTFS.Задачи  where [Номер] = '${$('[name="number-candoit"]').val()}'`;
     mssql.close();
     mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
     server.request().query(sql).then(res=>{
