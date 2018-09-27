@@ -442,7 +442,7 @@ function baseUpload(){
 }
 
 function baseDownload(){
-    let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Исполнитель where TabNo = [Исполнитель]) autor, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]  from MyTFS.Задачи  where [Номер] = '${$('[name="number-candoit"]').val()}'`;
+    let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Исполнители where TabNo = [Исполнитель]) autor, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]  from MyTFS.Задачи  where [Номер] = '${$('[name="number-candoit"]').val()}'`;
     console.log(sql);
     mssql.close();
     mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
