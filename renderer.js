@@ -411,16 +411,22 @@ function generateFile(){
 function baseUpload(){
     getValues(descriptionPacket);
     getValues(usedObjects);
-    let uploadContent = getDBContent(usedObjects);
-    let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
-    mssql.close();
-    mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
-    server.request().query(sql).then(rows=>{
-        alert(' Выгрузка завершена! ');
+    if (descriptionPacket.group.data['number-candoit'].value.trim() == "" || descriptionPacket.group.data['number-candoit'].value === 'undefined'){
+        alert('Отсутствует номер задачи в Access. Введите номер и повторите')
+    }else{
+        let uploadContent = getDBContent(usedObjects);
+        let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+        console.log(sql);
         mssql.close();
-    });
-   server.on('error',err=>{console.log(err);});
-  });
+        mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
+        server.request().query(sql).then(rows=>{
+            alert(' Выгрузка завершена! ');
+            mssql.close();
+        });
+       server.on('error',err=>{console.log(err);});
+      });
+    }
+   
     /*
     mssql.close();
        mssql.connect(data[DEFAULT_DBSERVER]).then(()=>{
@@ -441,8 +447,12 @@ function baseUpload(){
 }
 
 function baseDownload(){
-    let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Исполнители where TabNo = [Исполнитель]) author, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]  from MyTFS.Задачи  where [Номер] = '${$('[name="number-candoit"]').val()}'`;
-    mssql.close();
+    if ($('[name="number-candoit"]').val().trim() == "" || $('[name="number-candoit"]').val() === 'undefined'){
+        alert('Отсутствует номер задачи в Access. Введите номер и повторите')
+    } else {
+        let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Исполнители where TabNo = [Исполнитель]) author, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]  from MyTFS.Задачи  where [Номер] = '${$('[name="number-candoit"]').val()}'`;
+    console.log(sql);
+        mssql.close();
     mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
     server.request().query(sql).then(res=>{
         for (var item in res.recordset[0]){
@@ -466,12 +476,14 @@ function baseDownload(){
     }).catch((err)=>{
         alert(CONNECTION_ERROR);
         mssql.close();
-    });*/
+    });
    
     mssql.on('error',(err)=>{
         console.dir(err);
         mssql.close();
-    });
+    });*/
+    }
+   
     
 }
 
