@@ -415,7 +415,7 @@ function baseUpload(){
         alert('Отсутствует номер задачи в Access. Введите номер и повторите')
     }else{
         let uploadContent = getDBContent(usedObjects);
-        let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+        let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
         console.log(sql);
         mssql.close();
         mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
