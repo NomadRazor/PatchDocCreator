@@ -102,10 +102,18 @@ let template = [ //menu template
       },
       {
         label:'Выгрузить в Access',
-        accelerator:'Ctrl+U',
-        click:()=>{
-          baseUpload();
-        }
+        submenu:[{
+            label:"Дополнить",
+            click:()=>{
+                baseUpload('append');
+            }
+        },
+        {
+            label:"Заменить",
+            click:()=>{
+                baseUpload('refresh');
+            }
+        }]
       },
       {
         label:'Загрузить из Access',
@@ -408,14 +416,20 @@ function generateFile(){
    });  
 }
 
-function baseUpload(){
+function baseUpload(fill){
     getValues(descriptionPacket);
     getValues(usedObjects);
     if (descriptionPacket.group.data['number-candoit'].value.trim() == "" || descriptionPacket.group.data['number-candoit'].value === 'undefined'){
         alert('Отсутствует номер задачи в Access. Введите номер и повторите')
     }else{
         let uploadContent = getDBContent(usedObjects);
-        let sql = `update MyTFS.Задачи set [Задействованные_объекты] = isNull((select [Задействованные_объекты] from MyTFS.Задачи where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'),' ')+'${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+        if (fill == 'append'){
+            let sql = `update MyTFS.Задачи set [Задействованные_объекты] = isNull((select [Задействованные_объекты] from MyTFS.Задачи where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'),' ')+'${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+        } 
+        if (fill == 'refresh'){
+            let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+        }
+        
         console.log(sql);
         mssql.close();
         mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
