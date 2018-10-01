@@ -462,9 +462,8 @@ function baseUpload(fill){
 
 function findFromLabel(label){
     for (let ss in usedObjects.group.data){
-        if (label == usedObjects.group.data[ss].label){
+        if (label.trim() == usedObjects.group.data[ss].caption){
             return ss;
-            break;
         }
     }
 }
