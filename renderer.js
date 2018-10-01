@@ -492,7 +492,7 @@ function baseDownload(){
              if (arr_item != ""){
              let label_item = arr_item.substring(0,arr_item.indexOf('[')-1).trim();
              console.log('label',label_item,'--',findFromLabel(label_item));
-             let item_list = arr_item.substring(arr_item.indexOf('[')+1,arr_item.indexOf(']')-1).split(';');
+             let item_list = arr_item.substring(arr_item.indexOf('[')+1,-1).split(';');
              let list_item_count = item_list.length-1;
              console.log('count-rec',list_item_count);
              for (let i = 0; i<list_item_count;i++){
