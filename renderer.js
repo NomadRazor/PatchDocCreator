@@ -680,9 +680,7 @@ function prepareContent(){ // generate content of patch file
             padding:10px;
             transition: all 0.4s ease;
         }
-        .row:hover > span {
-            font-size: 1.3em;
-        }
+    
         .row > span:nth-child(1){
             grid-area:label;
             color:#000000;
@@ -708,9 +706,6 @@ function prepareContent(){ // generate content of patch file
         .row-info > span{
             padding:10px;
             transition: all 0.4s ease;
-        }
-        .row-info:hover > span {
-            font-size: 1.3em;
         }
 
         .row-info .label{
