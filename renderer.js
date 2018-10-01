@@ -102,7 +102,11 @@ let template = [ //menu template
       },
       {
         label:'Выгрузить в Access',
-        submenu:[{
+        accelerator:'Ctrl+U',
+        click:()=>{
+            baseUpload();
+        }
+        /*submenu:[{
             label:"Дополнить",
             click:()=>{
                 baseUpload('append');
@@ -113,7 +117,7 @@ let template = [ //menu template
             click:()=>{
                 baseUpload('refresh');
             }
-        }]
+        }]*/
       },
       {
         label:'Загрузить из Access',
@@ -419,16 +423,16 @@ function generateFile(){
 function baseUpload(fill){
     getValues(descriptionPacket);
     getValues(usedObjects);
+    let sql;
     if (descriptionPacket.group.data['number-candoit'].value.trim() == "" || descriptionPacket.group.data['number-candoit'].value === 'undefined'){
         alert('Отсутствует номер задачи в Access. Введите номер и повторите')
     }else{
         let uploadContent = getDBContent(usedObjects);
-        if (fill == 'append'){
-            let sql = `update MyTFS.Задачи set [Задействованные_объекты] = isNull((select [Задействованные_объекты] from MyTFS.Задачи where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'),' ')+'${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
-        } 
-        if (fill == 'refresh'){
-            let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
-        }
+       /* if (fill == 'append'){
+            sql = `update MyTFS.Задачи set [Задействованные_объекты] = isNull((select [Задействованные_объекты] from MyTFS.Задачи where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'),' ')+'${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+        } */
+        
+            sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
         
         console.log(sql);
         mssql.close();
@@ -478,6 +482,8 @@ function baseDownload(){
     mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
     server.request().query(sql).then(res=>{
         let nw_obj;
+        $('[name="del"]').trigger('click');
+        clearValues(usedObjects);
         for (var item in res.recordset[0]){
             if (item == 'objects'){
                 nw_obj = res.recordset[0][item];
@@ -485,27 +491,43 @@ function baseDownload(){
               $(`[name="${item}"]`).val(res.recordset[0][item]);  
             }
             
-        }
+        
+        if (nw_obj != null){
+        if (nw_obj.trim() != ""){
          console.log(nw_obj.split('\n'));
          let arr_obj = nw_obj.split('\n');
          for (let arr_item of arr_obj){
              if (arr_item != ""){
              let label_item = arr_item.substring(0,arr_item.indexOf('[')-1).trim();
              console.log('label',label_item,'--',findFromLabel(label_item));
-             let item_list = arr_item.substring(arr_item.indexOf('[')+1,-1).split(';');
+             let item_list = arr_item.substr(arr_item.indexOf('[')+1);
+             item_list = item_list.substr(0,item_list.length-1);
+             item_list = item_list.split(';');
              let list_item_count = item_list.length-1;
              console.log('count-rec',list_item_count);
-             for (let i = 0; i<list_item_count;i++){
+             for (let i = 0; i<list_item_count-1;i++){
                  $(`[data-rv="${findFromLabel(label_item)}"]`).trigger('click');
              }
+             let arr_data =[]
              for (let list_i of item_list){
                  if (list_i.trim() != ''){
                 let record = list_i.split(':');
                 console.log('main',record[0],'info',record[1]);
+                arr_data.push({"main":record[0],"info":record[1]});
                }
              }
+             let ln = 0;
+            document.querySelectorAll(`[name="${findFromLabel(label_item)}"]`)
+                .forEach((elem)=>{
+                elem.querySelector(`[data-rv="${findFromLabel(label_item)}-main"`).value = arr_data[ln].main; 
+                elem.querySelector(`[data-rv="${findFromLabel(label_item)}-info"`).value = arr_data[ln].info;
+                ln++;
+                });
             }
          }
+        }
+    }
+}
         alert(' Загрузка завершена! ');
         mssql.close();
     });
