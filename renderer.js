@@ -496,7 +496,7 @@ function baseDownload(){
              let list_item_count = item_list.length-1;
              console.log('count-rec',list_item_count);
              for (let i = 0; i<list_item_count;i++){
-                 $(`[data-rv="${label_item}"]`).trigger('click');
+                 $(`[data-rv="${findFromLabel(label_item)}"]`).trigger('click');
              }
              for (let list_i of item_list){
                  if (list_i.trim() != ''){
