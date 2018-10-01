@@ -415,7 +415,7 @@ function baseUpload(){
         alert('Отсутствует номер задачи в Access. Введите номер и повторите')
     }else{
         let uploadContent = getDBContent(usedObjects);
-        let sql = `update MyTFS.Задачи set [Задействованные_объекты] = '${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
+        let sql = `update MyTFS.Задачи set [Задействованные_объекты] = isNull((select [Задействованные_объекты] from MyTFS.Задачи where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'),' ')+'${uploadContent.replace(/'/g,"'+char(39)+'")}' where [Номер] = '${descriptionPacket.group.data['number-candoit'].value}'`;
         console.log(sql);
         mssql.close();
         mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
@@ -741,7 +741,6 @@ function prepareContent(){ // generate content of patch file
             text-decoration: none;
             grid-area: next-row;
             color:#1290e3;
-            font-size: 2em;
         }
         
         
