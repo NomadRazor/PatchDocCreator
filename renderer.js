@@ -460,6 +460,15 @@ function baseUpload(fill){
     
 }
 
+function findFromLabel(label){
+    for (let ss in usedObjects.group.data){
+        if (label == usedObjects.group.data[ss].label){
+            return ss;
+            break;
+        }
+    }
+}
+
 function baseDownload(){
     if ($('[name="number-candoit"]').val().trim() == "" || $('[name="number-candoit"]').val() === 'undefined'){
         alert('Отсутствует номер задачи в Access. Введите номер и повторите')
@@ -481,12 +490,22 @@ function baseDownload(){
          console.log(nw_obj.split('\n'));
          let arr_obj = nw_obj.split('\n');
          for (let arr_item of arr_obj){
-             console.log('label',arr_item.substring(1,arr_item.indexOf('[')-1).trim());
-             let item_list = arr_item.substring(arr_item.indexOf('['),arr_item.indexOf(']')).split(';');
+             if (arr_item != ""){
+             let label_item = arr_item.substring(0,arr_item.indexOf('[')-1).trim();
+             console.log('label',label_item,'--',findFromLabel(label_item));
+             let item_list = arr_item.substring(arr_item.indexOf('[')+1,arr_item.indexOf(']')-1).split(';');
+             let list_item_count = item_list.length-1;
+             console.log('count-rec',list_item_count);
+             for (let i = 0; i<list_item_count;i++){
+                 $(`[data-rv="${label_item}"]`).trigger('click');
+             }
              for (let list_i of item_list){
+                 if (list_i.trim() != ''){
                 let record = list_i.split(':');
                 console.log('main',record[0],'info',record[1]);
+               }
              }
+            }
          }
         alert(' Загрузка завершена! ');
         mssql.close();
