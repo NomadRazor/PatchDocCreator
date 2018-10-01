@@ -450,14 +450,30 @@ function baseDownload(){
     if ($('[name="number-candoit"]').val().trim() == "" || $('[name="number-candoit"]').val() === 'undefined'){
         alert('Отсутствует номер задачи в Access. Введите номер и повторите')
     } else {
-        let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Исполнители where TabNo = [Исполнитель]) author, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description]  from MyTFS.Задачи  where [Номер] = '${$('[name="number-candoit"]').val()}'`;
+        let sql = `select (select [Ф]+' '+[И]+' '+[О] from MyTFS.Исполнители where TabNo = [Исполнитель]) author, '('+[Департамент_заказчика]+') '+[Постановщик] customer, isNull([Название],'')+' '+isNull([Содержание],'')+' '+isNull([Содержание_задачи],'') [description], [Задействованные_объекты] [objects]  from MyTFS.Задачи  where [Номер] = '${$('[name="number-candoit"]').val()}'`;
     console.log(sql);
         mssql.close();
     mssql.connect(data[DEFAULT_DBSERVER]).then(server=>{
     server.request().query(sql).then(res=>{
+        let nw_obj;
         for (var item in res.recordset[0]){
-            $(`[name="${item}"]`).val(res.recordset[0][item]);
+            if (item == 'objects'){
+                nw_obj = res.recordset[0][item];
+            } else {
+              $(`[name="${item}"]`).val(res.recordset[0][item]);  
+            }
+            
         }
+         console.log(nw_obj.split('\n'));
+         let arr_obj = nw_obj.split('\n');
+         for (let arr_item of arr_obj){
+             console.log('label',arr_item.substring(1,arr_item.indexOf('[')-1).trim());
+             let item_list = arr_item.substring(arr_item.indexOf('['),arr_item.indexOf(']')).split(';');
+             for (let list_i of item_list){
+                let record = list_i.split(':');
+                console.log('main',record[0],'info',record[1]);
+             }
+         }
         alert(' Загрузка завершена! ');
         mssql.close();
     });
@@ -670,7 +686,7 @@ function prepareContent(){ // generate content of patch file
             display:grid;
             grid-template-columns: 40% 60%;
             grid-template-rows: 100%;
-            grid-template-areas: "label data";
+            grid-template-areas: "label data";+
             margin: 0px 0 0px 0;
             align-items: center;
             justify-content: center;
