@@ -664,44 +664,48 @@ function clearValues(obj){
 function drawInterfaceData (obj){ // generate html path for patch file
     let gr = obj.group;
     let html = ``;
-    html += `<div class="expander" name = "${gr.name}">`;
-    html += `<span class = "group-name">${gr.caption}</span>`;
+    
+    if (gr.name == "used-objects"){
+        html += `<table class="expander-i" name = "${gr.name}">`;
+        html += `<thead> <tr> <th colspan = "3" class = "group-name">${gr.caption}</th> </tr> </thead>`;
+    } else {
+        html += `<table class="expander" name = "${gr.name}">`;
+        html += `<thead> <tr> <th colspan = "2" class = "group-name">${gr.caption}</th> </tr> </thead> <tbody>`;
+    }
+    
    for (var ss in gr.data){
        switch (gr.data[ss].type) {
            case "text":
            case "date":
            html +=`
-                <div class = "row">
-                <span>${gr.data[ss].caption}</span>
-                <span>${gr.data[ss].value}</span>
-                </div>
+                <tr class = "row">
+                <td>${gr.data[ss].caption}</td>
+                <td>${gr.data[ss].value}</td>
+                </td>
                 `;
                break;
            case "textarea":
            html += `
-                <div class = "row">
-                <span>${gr.data[ss].caption}</span>
-                <span>${gr.data[ss].value}</span>
-                </div>
+                <tr class = "row">
+                <td>${gr.data[ss].caption}</td>
+                <td>${gr.data[ss].value}</td>
+                </td>
                 `; 
                break;
            case "info-select":
            case "info":
            if (gr.data[ss].values.length > 0){
-           html += `<div name = "${ss}-container">`;
            
            for (var ln = 0; ln<gr.data[ss].values.length;ln++){
             html +=`
                     
-                    <div name = "${ss}" class = "row-info" type = "${gr.data[ss].type}">
-                    <span class="label">${ln == 0 ? gr.data[ss].caption : ''}</span>
-                    <span>${gr.data[ss].values[ln].main}</span>
-                    <span>${gr.data[ss].values[ln].info}</span>
-                    <i></i>
-                    </div>
+                    <tr name = "${ss}" class = "row-info" type = "${gr.data[ss].type}">
+                    <td class="label">${ln == 0 ? gr.data[ss].caption : ''}</td>
+                    <td>${gr.data[ss].values[ln].main}</td>
+                    <td>${gr.data[ss].values[ln].info}</td>
+                    </tr>
                     `;  
                 }
-            html += `</div>`;
             } else {
                 html +='';
             }
@@ -710,7 +714,7 @@ function drawInterfaceData (obj){ // generate html path for patch file
                break;
        }
    }
-   return html+'</div>';
+   return html+'<tbody> </table>';
 };
 
 function prepareContent(){ // generate content of patch file
@@ -728,6 +732,38 @@ function prepareContent(){ // generate content of patch file
             grid-template-areas: ". main .";
             background:#ffffff;
         }             
+        table{
+            margin-bottom: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        thead > tr > th {
+             background: #244388;
+             color:#fff;
+        }
+        table, th, td {
+            border: 1px solid rgb(48, 48, 48);
+        }
+        tr > td:nth-child(1){
+            width:35%;
+        }
+        .expander-i tr > td:nth-child(1){
+            width:15%;
+        }
+        .expander-i tr > td:nth-child(2){
+            width:30%;
+        }
+        tr:nth-child(even){
+            background: #f1f1f1;
+        }
+        th{
+            padding:10px;
+        }
+        td{
+            padding:5px;
+        }
         .container{
             display:block;
             grid-area: main;
@@ -736,88 +772,6 @@ function prepareContent(){ // generate content of patch file
             margin-top:10px;
             color:#000000;
         }
-        .row{
-            display:grid;
-            grid-template-columns: 40% 60%;
-            grid-template-rows: 100%;
-            grid-template-areas: "label data";+
-            margin: 0px 0 0px 0;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-        }
-        .row > span{
-            padding:10px;
-            transition: all 0.4s ease;
-        }
-    
-        .row > span:nth-child(1){
-            grid-area:label;
-            color:#000000;
-        
-        }
-        .row > span:nth-child(2){
-            grid-area: data;
-            align-self: center;
-           
-        }
-        
-        .row-info{
-            display:grid;
-            grid-template-columns: 14% 43% 43%;
-            grid-template-rows: 100%;
-            grid-template-areas: "label data info";
-            margin: 5px 0 10px 0;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-        }
-
-        .row-info > span{
-            padding:10px;
-            transition: all 0.4s ease;
-        }
-
-        .row-info .label{
-            grid-area:label;
-            font-size:1em;
-            color:#000000;
-        
-        }
-        .row-info .data{
-            grid-area: data;
-            margin-right:5px;
-        }
-        .row-info .info{
-            grid-area: info;
-            box-sizing: border-box;
-            margin:2px 0px 2px 0px;
-        }
-        .row-info .next-row{
-            grid-area: next-row;
-            justify-self: center;
-            align-self: center;
-            color:#fff;
-            font-size: 2em;
-            text-decoration: none;
-        }
-        
-        .row-info .next-row:hover{
-            text-decoration: none;
-            grid-area: next-row;
-            color:#1290e3;
-        }
-        
-        
-        .group-name{
-            display: block;
-            font-size:1.5em;
-            margin:10px;
-            text-align: center;
-            color: #000;
-            background: #e9d41c;
-        }
-        
         ::-webkit-scrollbar{
           width: 5px;
           background:transparent;
@@ -825,16 +779,6 @@ function prepareContent(){ // generate content of patch file
         
         ::-webkit-scrollbar-thumb{
             background: #1290e3;
-        }
-        .center-row{
-            display:grid;
-            grid-template-columns: 100%;
-            grid-template-rows: 100%;
-            grid-template-areas: "center";
-            margin: 5px 0 10px 0;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
         }
         </style>   
             <title>Patch Document</title>
